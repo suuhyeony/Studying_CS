@@ -2,7 +2,7 @@
 
 **-운영체제란? **
 
-![운영체제란](C:\Users\user\Desktop\Studying_CS\OS\img\운영체제란.png)
+![운영체제란](https://user-images.githubusercontent.com/58247800/100134631-d9aa7d80-2ecb-11eb-8a32-7ea2f0f80759.png)
 
 : 컴퓨터 **하드웨어 바로 위에 설치**되어 사용자 및 다른 모든 소프트웨어와 하드웨어를 **연결**하는 소프트웨어 계층.
 
