@@ -322,7 +322,7 @@ I/O device에 memory 주소를 매겨서 memory에 접근하는 instruction을 �
 
 CPU가 여러 프로세스를 왔다갔다(**동적상태**)하므로 이러한 문맥(어디까지 했으며, 어디서부터 다시 시작할지..)이 중요하다.
 
-
+![프로세스 문맥 요소](C:\Users\user\Desktop\Studying_CS\OS\img\프로세스 문맥 요소.png)
 
 프로세스의 문맥을 나타내는 세 가지 요소를 알아보자.
 
@@ -344,16 +344,18 @@ CPU가 여러 프로세스를 왔다갔다(**동적상태**)하므로 이러한 
 
 : 프로세스는 상태가 변경되며 수행된다.
 
-- **Running** - CPU를 잡고 instruction을 수행 중인 상태
-- **Ready** - CPU를 기다리는 상태 (다른 조건은 모두 만족한 뒤)
+- **Running** - CPU를 **잡고** instruction을 수행 중인 상태
+- **Ready** - CPU를 **기다리는** 상태 (다른 조건은 모두 만족한 뒤)
 
-
-
-- **Blocked** (wait, sleep) - CPU를 주어도 당장은 instruction을 수행할 수 없는 상태. 
+- **Blocked** (wait, sleep) - CPU를 주어도 당장은 instruction을 **수행할 수 없는** 상태. 
 
   프로세스 자신이 요청한 이벤트(ex. I/O)가 만족되지 않아 이를 기다리는 중. (ex. 디스크에서 파일을 읽어와야 하는 경우)
 
-- **Suspended** (stopped) - **외부적인 이유**로 프로세스의 수행이 정지된 상태. 프로세스는 통째로 디스크에 **swap out**된다. (ex. 사용자가 프로그램을 일시정지함 : break-key / 시스템이 여러 이유로 프로세스를 일시정지함)
+  
+
+-중기 스케줄러로 인해 생긴 상태
+
+- **Suspended** (stopped) - **외부적인 이유**로 프로세스의 수행이 강제로 정지된 상태. 프로세스는 통째로 디스크에 **swap out**되고, 메모리를 잃어버림. (ex. 사용자가 프로그램을 일시정지함 : break-key / 시스템이 여러 이유로 프로세스를 일시정지함)
 
 ***Blocked와 Suspended의 차이**
 
@@ -363,16 +365,250 @@ Suspended는 **외부에서 resume** 해주어야 다시 active.
 
 
 
++)
+
 + New - 프로세스가 생성 중인 상태
 + Terminated - 수행이 끝난 상태 (종료 전 정리...)
 
 
 
-**-프로세스 상태도**
+**-프로세스 상태도1**
 
-(그림)
+먼저, _상태변화_에 초점을 맞춘 프로세스 상태도를 살펴보자. 
+
+![프로세스 상태도1](C:\Users\user\Desktop\Studying_CS\OS\img\프로세스 상태도1.png)
+
+1) 처음에 프로세스가 생성 중인 상태(**New**) 
+
+2) 프로세스가 생성되면(memory를 가지고) **ready** 상태 
+
+3) 본인 차례가 돼서 CPU를 얻으면 **running** 
+
+4-1) 자진해서 반납할 경우 -> (I/O같은 오래걸리는 작업할 때) **blocked** 후 결과값을 얻어서 다시 **ready** 
+
+4-2) 할당시간 만료로 CPU 뺏긴 경우 -> 다시 줄을 선다. (**ready**) 
+
+5) 본인의 역할을 다하면 상태종료 (**terminated**)
 
 
 
+**-프로세스 상태도2**
+
+이번엔 컴퓨터 _시스템 입장_에서의 프로세스 상태도를 살펴보자. (마치 여러 놀이기구를 운영하는 것과 비슷..)
+
+![프로세스 상태도2](C:\Users\user\Desktop\Studying_CS\OS\img\프로세스 상태도2.png)
+
+- CPU에는 하나의 프로세스만 running 하고 있고, 시간이 다 되어 CPU를 뺏기면 **Ready queue**에 줄을 세움. 그 다음 프로세스가 CPU를 얻고... 
+
+- I/O 입출력이 필요하면 blocked 상태가 되어 Disk **I/O queue**에 줄을 선다. 디스크는 장치 컨트롤러의 지휘 하에 요청이 들어온 내용을 순서에 맞게 처리한다. 작업이 다 끝나면 장치 컨트롤러가 CPU에게 작업이 끝났다는 인터럽트를 걸고, CPU는 하던 일을 잠시 멈추고 **OS 커널**이 주도권을 가져가게 됨. 
+
+커널은 1) 프로세스의 메모리 영역에 해당하는 데이터(I/O작업의 결과)를 넘겨줌 
+
+​			 2) 프로세스의 **상태를 blocked에서 ready로** 바꿔줌 (다시 CPU를 얻을 수 있도록)
+
+*사실 커널이 자신의 데이터 영역에 자료구조로 queue를 만들어 놓고, 상태를 바꿔가며 운영하는 것.
 
 
+
+**-프로세스 상태도3**
+
+![프로세스 상태도3](C:\Users\user\Desktop\Studying_CS\OS\img\프로세스 상태도3.png)
+
+마지막으로, _사용자 프로그램_의 관점에서 프로세스 상태도를 살펴보자.
+
+running 상태를 두 가지로 나눠서 표현 (user mode / monitor mode) 했다.
+
+유의할 점) 'OS가 running 하고 있다'라고는 표현하지 않고, '**프로세스가 커널모드에서 running** 하고있다'라고 함.
+
+suspended 상태에서는 메모리를 잃어버렸으므로, CPU작업을 수행할 수가 없는 inactive 상태가 된다.
+
+
+
+**-PCB (Process Control Block)**
+
+: 운영체제가 각 프로세스를 관리하기 위해 **프로세스당** 유지하는 정보
+
+다음의 구성요소를 가짐 (구조체로 유지)
+
+![PCB 구조](C:\Users\user\Desktop\Studying_CS\OS\img\PCB 구조.png)
+
+- 1) OS가 관리상 사용하는 정보
+  - Process state(프로세스가 어떤 상태인지), Process ID
+  - Scheduling information, priority
+- 2) CPU 수행 관련 HW 값 (문맥 관련)
+  - Program counter, registers
+- 3) 메모리 관련
+  - code, data, stack의 위치정보
+- 4) 파일 관련
+  - Open file descriptors...
+
+
+
+**-문맥 교환 (Context Swith)**
+
+: 한 프로세스에서 **다른 프로세스**로 CPU를 넘겨주는 과정.
+
+*CPU가 다른 프로세스에게 넘어갈 때 OS는?
+
+: CPU를 내어주는 프로세스의 상태를 그 프로세스의 **PCB(in 커널 주소공간)에 저장**. (여기까지 했다잉)
+
+CPU를 새롭게 얻는 프로세스의 상태를 **PCB에서 읽어와** HW에 복원. (어디까지 했더라? 어디서부터 해야하지?)
+
+
+
+*system call / interrupt 발생 시, 반드시 문맥교환이 일어나는 것은 아니다. (ex. 프로그램A -> OS 커널 -> 프로그램A)
+
+이 경우에도 약간의 정보가 PCB에 저장되지만, 문맥교환이 일어나는 경우보다 부담이 적다.
+
+
+
+**-프로세스를 스케줄링하기 위한 큐**
+
+**Job queue** ) 현재 시스템 내에 있는 모든 프로세스의 집합
+
+- **Ready queue** - 현재 메모리 내에 있으면서, **CPU를 잡아 실행되기를 기다리는** 프로세스의 집합
+- **Device queue** - **I/O device의 처리를 기다리는** 프로세스의 집합
+
+=> 프로세스들은 각 큐들을 오가며 수행된다.
+
+![큐](C:\Users\user\Desktop\Studying_CS\OS\img\큐.png)
+
+자료구조 형태로 보면,
+
+큐에 줄 서있다는 것은 **PCB를 줄세워** 놓았다는 것. (pointer를 이용해)
+
+프로세스들이 다양한 큐에 줄 서서 서비스를 받기를 기다리고, OS가 관리함.
+
+
+
+![스케줄링 받는](C:\Users\user\Desktop\Studying_CS\OS\img\스케줄링 받는.png)
+
+하나의 프로세스가 스케줄링 되는 모습을 표현
+
+
+
+**-스케줄러 (Scheduler)**
+
+- **Long-term scheduler** (장기 스케줄러, job scheduler)
+
+  : 프로세스에 **memory 및 각종 자원을 주는 문제**를 다룬다.
+
+  즉, 시작 프로세스 중 어떤 것들을 ready queue로 보낼지(memory를 줄지) 결정한다. (New -> ready로 admitted)
+
+  이런 방식으로 **degree of Multiprogramming**을 제어 (메모리에 올라가 있는 프로그램의 수를 _처음부터_ 조절 - 프로그램이 메모리에 너무 많아도 적어도 성능 안 좋음)
+
+  보통 우리가 사용하는 time sharing system에는 장기 스케줄러가 없다. (프로그램 실행 시키면 무조건 메모리를 주어 ready로) **중기 스케줄러가 메모리 성능 제어를 대신**함.
+
+  
+
+- **Short-term scheduler** (단기 스케줄러, CPU scheduler)
+
+  : 프로세스에 **CPU를 주는 문제**를 다룬다.
+
+  즉, 어떤 프로세스를 다음번에 running 시킬지 결정한다.
+
+  따라서 충분히 빨라야 한다. (millisecond 단위)
+
+
+
+- **Medium-term scheduler** (중기 스케줄러, Swapper)
+
+  : 프로세스에게서 **memory를 '뺏는'** 문제를 다룬다.
+
+  _일단 프로그램을 메모리에 다 올려놓고_ **여유공간 마련을 위해 프로세스를 통째로 (메모리에서 디스크로) 쫓아낸다. ** -> (악역이지만, 장기 스케줄러보다 훨씬 더 효과적)
+
+  이런 방식으로 degree of Multiprogramming을 제어
+
+
+
+**-Thread** (= lightweight process)
+
+: 프로세스를 여러 개 두지 않고, 프로세스 내부에 CPU 수행단위만 여러 개 두고 있는 것. 
+
+즉, 프로세스를 하나만 띄우고, 프로그램 카운터(현재 어느 부분을 수행하고 있는지 가리킴)만 여러 개를 두는 것. 
+
+
+
+- heavyweight process - 하나의 thread를 가지고 있는 task
+
+![heavyweight 프로세스](C:\Users\user\Desktop\Studying_CS\OS\img\heavyweight 프로세스.png)
+
+프로세스마다 왼쪽의 주소공간이 생긴다. 그리고 프로세스 하나를 관리하기 위해 OS 내부에서 프로세스 정보가 담긴 PCB를 관리한다.
+
+그런데 만약, **동일한 일을 하는 프로세스가 여러 개** 있다면, 프로세스 주소공간이 여러 개가 만들어짐. (**메모리가 낭비됨**)
+
+
+
+- lightweight process - 여러 개의 thread를 가지고 있는 task
+
+![thread](C:\Users\user\Desktop\Studying_CS\OS\img\thread.png)
+
+=>  **주소공간을 하나만** 띄워놓고, 각 프로세스마다 **다른 부분의 코드를 수행**할 수 있게 해주면 된다.
+
+CPU 수행 단위가 여러개 있으니, stack도 별도로 두어야 한다.
+
+프로세스 여러 개를 두는 것보다 효율적이다. 프로세스 하나에서 공유할 수 있는 것들(메모리 주소, 프로세스 상태, 각종 자원)은 최대한 공유하고, CPU 수행과 관련 있는 것들(프로그램 카운터, register, stack)만 독립적으로 가진다.
+
+
+
+- Thread의 구성 (CPU 수행과 관련있는 것들을 독립적으로 가짐)
+  - Program counter
+  - register set
+  - stack space
+  
+- Thread가 동료 thread와 공유하는 부분 (= task) 
+  
+  (프로세스 1개에 여러개의 threads와 task 1개)
+  
+  - code section
+  - data section
+  - OS resources
+
+프로세스가 하나이기 때문에 PCB도 하나만 생성됨. 그러나 PCB 안에 CPU 수행과 관련된  정보를 각 thread마다 별도의 copy를 가지게 된다. (program counter, registers)
+
+
+
+- 장점
+
+  - 다중 thread로 구성된 task 구조에서는, 
+
+    하나의 서버 thread가 blocked(waiting)상태인 동안에도, 
+
+    동일한 task 내의 다른 thread가 실행(running)되어 빠른 처리가 가능하다. (빠른 응답성 제공) 
+
+    (ex. 웹페이지 읽어올 때, img thread가 실행되는 동안 txt thread가 완료)
+
+  - 동일한 일을 수행하는 다중 thread가 협력하여 높은 처리율(throughput)과 성능향상(자원절약)을 얻을 수 있다.
+
+  - thread를 사용하면 병렬성을 높일 수 있다. (ex. CPU가 많은 컴퓨터에서만)
+
+
+
+- 장점요약
+  - **응답성**(Responsiveness) : 일종의 **비동기식 작업**과 같이, 만약 한 thread(img)가 blocked 상태여도, 다른 thread(txt)가 continue. (ex. multi-threaded web)
+  
+  - **자원의 공유**(Resource sharing) : n개의 thread가 binary code, data, 프로세스 자원 공유.
+  
+  - **경제성**(Econonmy) : thread에서 **creating & CPU switching**(문맥교환) 하는 것이 프로세스에서 하는 것보다 빠름. 
+  
+    즉, 프로세스 생성보다 thread 생성(숟가락만 얹는..)이 30배 더 빠르다. 또한, CPU 문맥교환보다는 프로세스 내에서 thread간 이동이 5배 더 빠르다.
+  
+  - Utilization of MP architectures : 다른 CPU 위에서 각각의 thread들이 병렬적으로 실행된다. (다중 CPU 환경에서)
+
+
+
+**-Thread 수행**
+
+- **Kernel Threads** (supported by Kernel)
+
+  : 커널이 thread가 많다는 것을 OS가 알고 있다. 
+
+  ex. windows 95/98/NT, Solaris, Digital UNIX, March
+
+- **User Threads** (supported by library)
+
+  : OS는 thread가 많다는 것을 모르고, user program이 라이브러리의 지원을 받아 스스로 thread를 관리한다.
+
+  ex. POSIX Pthreads, March C-threads, Solaris threads
+
+- real-time threads
