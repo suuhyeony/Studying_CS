@@ -320,7 +320,7 @@ I/O device에 memory 주소를 매겨서 memory에 접근하는 instruction을 �
 
 CPU가 여러 프로세스를 왔다갔다(**동적상태**)하므로 이러한 문맥(어디까지 했으며, 어디서부터 다시 시작할지..)이 중요하다.
 
-![프로세스 문맥 요소](C:\Users\user\Desktop\Studying_CS\OS\img\프로세스 문맥 요소.png)
+![프로세스 문맥 요소](https://user-images.githubusercontent.com/58247800/100429958-7beb8080-30d9-11eb-9ad1-101d7c5f36e1.png)
 
 프로세스의 문맥을 나타내는 세 가지 요소를 알아보자.
 
@@ -375,7 +375,7 @@ Suspended는 **외부에서 resume** 해주어야 다시 active.
 
 먼저, _상태변화_에 초점을 맞춘 프로세스 상태도를 살펴보자. 
 
-![프로세스 상태도1](C:\Users\user\Desktop\Studying_CS\OS\img\프로세스 상태도1.png)
+![프로세스 상태도1](https://user-images.githubusercontent.com/58247800/100430122-ab9a8880-30d9-11eb-9954-84bc521bae7b.png)
 
 1) 처음에 프로세스가 생성 중인 상태(**New**) 
 
@@ -395,7 +395,7 @@ Suspended는 **외부에서 resume** 해주어야 다시 active.
 
 이번엔 컴퓨터 _시스템 입장_에서의 프로세스 상태도를 살펴보자. (마치 여러 놀이기구를 운영하는 것과 비슷..)
 
-![프로세스 상태도2](C:\Users\user\Desktop\Studying_CS\OS\img\프로세스 상태도2.png)
+![프로세스 상태도2](https://user-images.githubusercontent.com/58247800/100430144-b6551d80-30d9-11eb-9c26-a18c04d2b896.png)
 
 - CPU에는 하나의 프로세스만 running 하고 있고, 시간이 다 되어 CPU를 뺏기면 **Ready queue**에 줄을 세움. 그 다음 프로세스가 CPU를 얻고... 
 
@@ -411,7 +411,7 @@ Suspended는 **외부에서 resume** 해주어야 다시 active.
 
 **-프로세스 상태도3**
 
-![프로세스 상태도3](C:\Users\user\Desktop\Studying_CS\OS\img\프로세스 상태도3.png)
+![프로세스 상태도3](https://user-images.githubusercontent.com/58247800/100430152-b81ee100-30d9-11eb-9bf9-522f5fecd73c.png)
 
 마지막으로, _사용자 프로그램_의 관점에서 프로세스 상태도를 살펴보자.
 
@@ -429,7 +429,7 @@ suspended 상태에서는 메모리를 잃어버렸으므로, CPU작업을 수�
 
 다음의 구성요소를 가짐 (구조체로 유지)
 
-![PCB 구조](C:\Users\user\Desktop\Studying_CS\OS\img\PCB 구조.png)
+![PCB 구조](https://user-images.githubusercontent.com/58247800/100430197-ca991a80-30d9-11eb-9b3c-e5c0e7dfca86.png)
 
 - 1) OS가 관리상 사용하는 정보
   - Process state(프로세스가 어떤 상태인지), Process ID
@@ -470,7 +470,7 @@ CPU를 새롭게 얻는 프로세스의 상태를 **PCB에서 읽어와** HW에 
 
 => 프로세스들은 각 큐들을 오가며 수행된다.
 
-![큐](C:\Users\user\Desktop\Studying_CS\OS\img\큐.png)
+![큐](https://user-images.githubusercontent.com/58247800/100430228-d684dc80-30d9-11eb-9ff4-793ddb575399.png)
 
 자료구조 형태로 보면,
 
@@ -480,7 +480,7 @@ CPU를 새롭게 얻는 프로세스의 상태를 **PCB에서 읽어와** HW에 
 
 
 
-![스케줄링 받는](C:\Users\user\Desktop\Studying_CS\OS\img\스케줄링 받는.png)
+![스케줄링 받는](https://user-images.githubusercontent.com/58247800/100430240-da186380-30d9-11eb-8389-9ae2ccc3f89a.png)
 
 하나의 프로세스가 스케줄링 되는 모습을 표현
 
@@ -530,7 +530,7 @@ CPU를 새롭게 얻는 프로세스의 상태를 **PCB에서 읽어와** HW에 
 
 - heavyweight process - 하나의 thread를 가지고 있는 task
 
-![heavyweight 프로세스](C:\Users\user\Desktop\Studying_CS\OS\img\heavyweight 프로세스.png)
+![heavyweight 프로세스](https://user-images.githubusercontent.com/58247800/100430276-e7355280-30d9-11eb-89df-8e109745fc6e.png)
 
 프로세스마다 왼쪽의 주소공간이 생긴다. 그리고 프로세스 하나를 관리하기 위해 OS 내부에서 프로세스 정보가 담긴 PCB를 관리한다.
 
@@ -540,7 +540,7 @@ CPU를 새롭게 얻는 프로세스의 상태를 **PCB에서 읽어와** HW에 
 
 - lightweight process - 여러 개의 thread를 가지고 있는 task
 
-![thread](C:\Users\user\Desktop\Studying_CS\OS\img\thread.png)
+![thread](https://user-images.githubusercontent.com/58247800/100430285-eac8d980-30d9-11eb-88d2-315bf553cfb0.png)
 
 =>  **주소공간을 하나만** 띄워놓고, 각 프로세스마다 **다른 부분의 코드를 수행**할 수 있게 해주면 된다.
 
