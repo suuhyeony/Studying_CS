@@ -1,12 +1,12 @@
 ## Ch1. 운영체제의 개요
 
-**-운영체제란? **
+**-운영체제란?**
 
-![운영체제란](C:\Users\user\Desktop\Studying_CS\OS\img\운영체제란.png)
+![운영체제란](https://user-images.githubusercontent.com/58247800/100134631-d9aa7d80-2ecb-11eb-8a32-7ea2f0f80759.png)
 
 : 컴퓨터 **하드웨어 바로 위에 설치**되어 사용자 및 다른 모든 소프트웨어와 하드웨어를 **연결**하는 소프트웨어 계층.
 
-
+<br/>
 
 **-운영체제의 목적**
 
@@ -18,7 +18,7 @@
 - SW 자원 (프로세스/ 파일/ 메시지 등)을 관리
 - 사용자 및 운영체제 자신의 보호
 
-
+<br/>
 
 : 컴퓨터 시스템을 **편리**하게 사용할 수 있는 **환경 제공**. 
 
@@ -27,7 +27,7 @@
 - 동시 사용자/ 프로그램들이 각각 독자적 컴퓨터에서 실행되는 듯한 느낌을 제공
 - HW를 직접 다루는 복잡한 부분을 OS가 대행
 
-
+<br/>
 
 **-운영체제의 분류**
 
@@ -39,7 +39,7 @@
 
 시분할(time sharing) - 여러 작업 수행 시, 일정 시간 단위로 분할해 처리 (**interactive**함)
 
-
+<br/>
 
 **-운영체제의 예**
 
@@ -47,11 +47,11 @@
 
 - MS Windows - MS사의 다중 작업용 GUI기반 OS.
 
-
+<br/>
 
 **-운영체제의 구조**
 
-![운영체제의 구조](C:\Users\user\Desktop\Studying_CS\OS\img\운영체제의 구조.png)
+![운영체제의 구조](https://user-images.githubusercontent.com/58247800/100134777-15ddde00-2ecc-11eb-9d1a-49dee71ede68.png)
 
 - **CPU** - 누구에게 CPU를 줄지 정하는 **CPU 스케줄링**을 담당. (짧은 시간 간격으로 줬다 뺐었다를 반복)
 - **메모리** - 한정된 메모리를 어떻게 쪼개어 쓸지? (**메모리 관리**)
@@ -62,7 +62,7 @@
 
 +) 그 외 - 보호 시스템/ 네트워킹/ 명령어 해석기
 
-
+<br/>
 
 ## Ch2. 시스템 구조와 프로그램 실행
 
@@ -70,13 +70,13 @@
 
 컴퓨터 시스템이 어떻게 동작하고, 프로그램들이 하드웨어 위에서 어떻게 돌아가는지 알아보자.
 
-
+<br/>
 
 **-컴퓨터 시스템 구조**
 
 : 쉽게 말해 **컴퓨터(CPU, 메모리)**가 호스트고, **입출력 장치**(하드디스크, 키보드/마우스, 프린터, 모니터 등)와 정보를 주고 받는다. 사이에는 DMA 컨트롤러와 타이머가 있다.
 
-![컴퓨터시스템 구조](C:\Users\user\Desktop\Studying_CS\OS\img\컴퓨터시스템 구조.png)
+![컴퓨터시스템 구조](https://user-images.githubusercontent.com/58247800/100134828-2726ea80-2ecc-11eb-80bb-a6794086ef20.png)
 
 - **CPU** - 매순간 메모리에서 기계어(instruction)를 읽어와 실행. 한 instruction이 끝나면, interrupt line 검사. 
 
@@ -99,7 +99,7 @@
 
 - **DMA controller** - CPU의 중재 없이 데이터를 전송하고, 작업이 완료되면 interrupt를 걸어 CPU에게 알려줌.
 
-
+<br/>
 
 예시를 들면,
 
@@ -113,7 +113,7 @@ CPU가 작업을 하던 중, 프로그램1이 키보드 입력정보가 필요
 
 -> 하던 일 프로그램2가 아직 할당시간이 끝나지 않았으므로 계속 진행됨. (프로그램1은 자기 차례를 기다림) 
 
-
+<br/>
 
 구조별로 더 자세한 설명
 
@@ -126,13 +126,13 @@ Mode bit를 통해 두 가지 모드의 operation을 지원한다.
 - **1** - **사용자 모드** ) 사용자 프로그램을 수행
 - **0 **- **커널모드** ) OS코드 수행
 
-![모드비트](C:\Users\user\Desktop\Studying_CS\OS\img\모드비트.png)
+![모드비트](https://user-images.githubusercontent.com/58247800/100134877-35750680-2ecc-11eb-9a58-e5cd4532ca07.png)
 
 interrupt가 발생하거나 예외 발생 시, HW가 mode bit를 0으로 바꿈.
 
 사용자 프로그램에게 CPU를 넘기기 전에 mode bit를 1로 세팅.
 
-
+<br/>
 
 **-Timer**
 
@@ -142,7 +142,7 @@ interrupt가 발생하거나 예외 발생 시, HW가 mode bit를 0으로 바꿈
 
 타이머는 매 클릭 tick 마다 1씩 감소 -> 타이머 값이 0이 되면 'timer interrupt' 발생.
 
-
+<br/>
 
 **-I/O Device Controller**(입출력 장치 제어기)
 
@@ -152,7 +152,7 @@ interrupt가 발생하거나 예외 발생 시, HW가 mode bit를 0으로 바꿈
 
 I/O는 실제 device와 local buffer 사이에서 일어남 -> I/O가 끝나면 interrupt로 CPU에게 알림
 
-
+<br/>
 
 **-입출력의 수행**
 
@@ -172,7 +172,7 @@ I/O는 실제 device와 local buffer 사이에서 일어남 -> I/O가 끝나면 
 
 ​	5) I/O 완료 시, 제어권을 시스템콜 다음 명령으로 옮김
 
-
+<br/>
 
 **-인터럽트(interrupt)**
 
@@ -180,26 +180,26 @@ I/O는 실제 device와 local buffer 사이에서 일어남 -> I/O가 끝나면 
 
 시스템콜 / 예외적으로 프로그램이 오류를 범한 경우에는 SW가 인터럽트를 발생시키게 되는데, 이를 **Trap**이라고 한다. ('Trap을 이용해 인터럽트를 건다'고 함.)
 
-
+<br/>
 
 +) **인터럽트 벡터** : **인터럽트 번호 - 주소 쌍**으로 해당 인터럽트의 처리루틴 **주소**를 갖고 있음.
 
 **인터럽트 처리 루틴**(인터럽트 핸들러, **Interrupt Service Routine**): 해당 인터럽트를 처리하는 커널 함수로 **실제 해야할 일**이라고 생각하면 됨. 
 
-
+<br/>
 
 => 인터럽트 당한 시점의 레지스터와 program counter를 저장한 후, CPU의 제어를 인터럽트 처리 루틴에 넘긴다.
 
 => 현대 OS는 interrupt 구조에 의해 구동된다. (interrupt 걸릴 때만 OS가 CPU를 가짐)
 
-
+<br/>
 
 **-동기식 입출력과 비동기식 입출력**
 
 - **동기식 입출력**(Synchronous I/O) - I/O 요청 후, 작업이 완료된 후에야 제어가 사용자 프로그램에 넘어감. (다른 일을 수행하지 않고 기다림, 결과를 보고 다음 작업)
 - **비동기식 입출력**(Asynchronous I/O) - I/O가 시작 된 후, 작업이 끝나기를 기다리지 않고, 제어가 사용자 프로그램에 즉시 넘어감. (입출력과 무관한 일로 넘어감)
 
-
+<br/>
 
 **-DMA(Direct Memory Access)**
 
@@ -209,7 +209,7 @@ I/O는 실제 device와 local buffer 사이에서 일어남 -> I/O가 끝나면 
 
 ---
 
-
+<br/>
 
 **-서로 다른 I/O 명령어**
 
@@ -223,11 +223,11 @@ instruction의 두 가지 종류)
 
 I/O device에 memory 주소를 매겨서 memory에 접근하는 instruction을 통해 I/O에 접근할 수도 있다. (**Memory Mapped I/O**)
 
-
+<br/>
 
 **-저장장치 계층구조**
 
-![저장장치 계층구조](C:\Users\user\Desktop\Studying_CS\OS\img\저장장치 계층구조.png)
+![저장장치 계층구조](https://user-images.githubusercontent.com/58247800/100134946-4a519a00-2ecc-11eb-93ed-5c1355177eda.png)
 
 - Primary storage ) CPU가 직접 접근해서 처리 가능 (Executable, byte 단위), 휘발성 매체
 
@@ -239,15 +239,15 @@ I/O device에 memory 주소를 매겨서 memory에 접근하는 instruction을 �
 
 => 상위 단계일수록 속도가 빠른 매체를 사용 (비싸고 용량 적음)
 
-
+<br/>
 
 **-프로그램의 실행** (프로그램이 컴퓨터에서 어떻게 실행되는가?)
 
-![프로그램의 실행1](C:\Users\user\Desktop\Studying_CS\OS\img\프로그램의 실행1.png)
+![프로그램의 실행1](https://user-images.githubusercontent.com/58247800/100134970-550c2f00-2ecc-11eb-8cf3-1ddb0d72b0d4.png)
 
 보통 프로그램은 파일 시스템(비휘발성 디스크)내에 실행파일 형태로 저장되어 있다. 이 실행파일을 실행시키면 **메모리**에 올라가 **프로세스**가 된다. (정확하게는 **가상 메모리**를 거쳐 물리적 메모리로 올려 실행시킴, 논리적 메모리 주소가 물리적 메모리 주소로 변환됨)
 
-![프로그램의 실행](C:\Users\user\Desktop\Studying_CS\OS\img\프로그램의 실행.png)
+![프로그램의 실행](https://user-images.githubusercontent.com/58247800/100134984-58071f80-2ecc-11eb-9a6b-cf6536b9e2c7.png)
 
 1) 프로그램을 실행하면 그 프로그램의 **독자적인 메모리 주소공간**(code, data, stack 영역을 가진)이 생김.
 
@@ -259,11 +259,11 @@ I/O device에 memory 주소를 매겨서 memory에 접근하는 instruction을 �
 
 부팅하면 커널영역은 메모리에 항상 상주해있지만, 사용자 프로그램 주소공간은 프로그램 종료 시 사라진다.
 
-
+<br/>
 
 **-커널 주소 공간의 내용**
 
-![커널 주소공간](C:\Users\user\Desktop\Studying_CS\OS\img\커널 주소공간.png)
+![커널 주소공간](https://user-images.githubusercontent.com/58247800/100134999-5dfd0080-2ecc-11eb-8222-8c82218146cb.png)
 
 - **code** (커널 코드) 
 
@@ -280,7 +280,7 @@ I/O device에 memory 주소를 매겨서 memory에 접근하는 instruction을 �
 
   : 사용자 프로그램마다 커널스택을 따로 갖고 있음.
 
-
+<br/>
 
 **-사용자 프로그램이 사용하는 함수**
 
@@ -298,15 +298,13 @@ I/O device에 memory 주소를 매겨서 memory에 접근하는 instruction을 �
 
   : 운영체제 프로그램의 함수. 내가 갖고있지 않고, 커널 함수를 호출해(virtual memory 내에서 점프할 수 없으므로, interrupt line을 세팅하고 **시스템 콜**) 씀.
 
-
+<br/>
 
 **-프로그램의 실행** (프로그램 A 관점에서)
 
+![프로그램A의 관점 실행](https://user-images.githubusercontent.com/58247800/100135008-60f7f100-2ecc-11eb-8050-e4a95be52ce9.png)
 
-
-![프로그램A의 관점 실행](C:\Users\user\Desktop\Studying_CS\OS\img\프로그램A의 관점 실행.png)
-
-
+<br/>
 
 ## Ch3. 프로세스
 
@@ -345,6 +343,7 @@ CPU가 여러 프로세스를 왔다갔다(**동적상태**)하므로 이러한 
 : 프로세스는 상태가 변경되며 수행된다.
 
 - **Running** - CPU를 **잡고** instruction을 수행 중인 상태
+
 - **Ready** - CPU를 **기다리는** 상태 (다른 조건은 모두 만족한 뒤)
 
 - **Blocked** (wait, sleep) - CPU를 주어도 당장은 instruction을 **수행할 수 없는** 상태. 
@@ -552,14 +551,15 @@ CPU 수행 단위가 여러개 있으니, stack도 별도로 두어야 한다.
 
 
 - Thread의 구성 (CPU 수행과 관련있는 것들을 독립적으로 가짐)
+
   - Program counter
   - register set
   - stack space
-  
+
 - Thread가 동료 thread와 공유하는 부분 (= task) 
-  
+
   (프로세스 1개에 여러개의 threads와 task 1개)
-  
+
   - code section
   - data section
   - OS resources
@@ -585,14 +585,15 @@ CPU 수행 단위가 여러개 있으니, stack도 별도로 두어야 한다.
 
 
 - 장점요약
+
   - **응답성**(Responsiveness) : 일종의 **비동기식 작업**과 같이, 만약 한 thread(img)가 blocked 상태여도, 다른 thread(txt)가 continue. (ex. multi-threaded web)
-  
+
   - **자원의 공유**(Resource sharing) : n개의 thread가 binary code, data, 프로세스 자원 공유.
-  
+
   - **경제성**(Econonmy) : thread에서 **creating & CPU switching**(문맥교환) 하는 것이 프로세스에서 하는 것보다 빠름. 
-  
+
     즉, 프로세스 생성보다 thread 생성(숟가락만 얹는..)이 30배 더 빠르다. 또한, CPU 문맥교환보다는 프로세스 내에서 thread간 이동이 5배 더 빠르다.
-  
+
   - Utilization of MP architectures : 다른 CPU 위에서 각각의 thread들이 병렬적으로 실행된다. (다중 CPU 환경에서)
 
 
