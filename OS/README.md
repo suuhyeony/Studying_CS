@@ -687,8 +687,8 @@ CPU 수행 단위가 여러개 있으니, stack도 별도로 두어야 한다.
 int main()
 { int pid;
   printf('\n Hello!\n');
-  pid = fork();								// 자식 프로세스 생성됨 (context복제됨)
-  if (pid == 0)		// 자식일 때   			 // 여기서부터 자식 프로세스가 실행됨
+  pid = fork();								         // 자식 프로세스 생성됨 (context복제됨)
+  if (pid == 0)		  // 자식일 때   			// 여기서부터 자식 프로세스가 실행됨
       printf('\n Hello, I am child!\n');
   else if (pid > 0) // 부모일 때
       printf('\n Hello, I am parent!\n');
