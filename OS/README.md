@@ -726,7 +726,7 @@ int main()
 - 커널은 **child가 종료될 때까지 프로세스 A를 sleep**시킨다. (block 상태)
 - childe 프로세스가 종료되면, 커널은 프로세스 A를 깨운다. (ready 상태)
 
-(그림)
+![wait 시스템콜](https://user-images.githubusercontent.com/58247800/100582581-cfa1d800-332c-11eb-956d-96d4b4faec60.png)
 
 <br/>
 
@@ -770,7 +770,7 @@ int main()
 
 **-Interprocess Communication**
 
-(그림)
+![IPC](https://user-images.githubusercontent.com/58247800/100582603-d7fa1300-332c-11eb-8c27-62479baf0217.png)
 
 <br/>
 
@@ -780,8 +780,8 @@ int main()
 
   - **Direct Communication** : 통신하려는 프로세스의 **이름을 명시**적으로 표시
 
-    (그림)
+    ![direct 메시지](https://user-images.githubusercontent.com/58247800/100582619-dd575d80-332c-11eb-9bc1-3199f1b627b8.png)
 
   - **Indirect Communication** : **Mailbox**(또는 port)를 통해 메시지를 간접 전달 (아무나에게 보낼 수 있음)
 
-    (그림)
+    ![indirect 메시지](https://user-images.githubusercontent.com/58247800/100582630-dfb9b780-332c-11eb-976d-d48d22ecaab1.png)
