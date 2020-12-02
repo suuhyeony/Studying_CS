@@ -1008,7 +1008,7 @@ CPU를 **다 쓰고 나가는 시점**에 스케줄링 결정
 
 <br/>
 
-**-Priority Scheduling**
+**-3. Priority Scheduling**
 
 : 우선순위가 높은 프로세스부터 스케줄링. (추상적 개념) 각 프로세스마다 우선순위 번호가 할당되어 있다. highest priority(=smallest integer)를 가진 프로세스에게 CPU할당.
 
@@ -1032,7 +1032,7 @@ Priority = 다음 CPU burst time을 예측한 것
 
 <br/>  
 
-**-RR (Round Robin)**
+**-4. RR (Round Robin)**
 
 : 각 프로세스는 **동일한 크기의 할당시간**(**time quantum** - 일반적으로 10~100 miliseconds)을 가짐. (선점형)
 
@@ -1069,7 +1069,7 @@ Priority = 다음 CPU burst time을 예측한 것
 
 <br/>
 
-**-Multilevel Queue**
+**-5. Multilevel Queue**
 
 : 그동안 한 줄 서기를 했는데, 여러 줄로 CPU를 기다리는 줄을 세운다. 줄마다 우선 순위가 다르고, 위로 갈수록 우선순위가 높다. (성골, 진골, 6두품, 노비...) 태어난 신분에 따라 영원히 그 줄로 살아야 함. (차별적)
 
@@ -1099,7 +1099,7 @@ Priority = 다음 CPU burst time을 예측한 것
 
 <br/>    
 
-**-Multilevel Feedback Queue**
+**-6. Multilevel Feedback Queue**
 
 프로세스가 다른 큐로 이동(승격/떨어짐) 가능.
 
