@@ -794,20 +794,20 @@ int main()
 
 : CPU를 연속적으로 수행하는 단계와 I/O를 수행하는 단계가 연속적으로 나옴.
 
-(그림)
+![CPU burst time](https://user-images.githubusercontent.com/58247800/100880173-c745ca80-34ef-11eb-8b12-4dbc5f0b22f0.png)
 
-
+<br/>
 
 **-CPU-burst Time의 분포**
 
-(그림)
+![CPU burst time2](https://user-images.githubusercontent.com/58247800/100880190-cad95180-34ef-11eb-98b6-767da95b3148.png)
 
 => 여러 종류의 job(=process)이 섞여 있으므로, **'CPU 스케줄링'이 필요**하다.
 
 - Interactive job이 오래 기다리지 않도록 적절한 응답 제공 요망 (interactive한 I/O job에게)
 - CPU와 I/O장치 등 시스템 자원을 골고루 효율적으로 사용
 
-
+<br/>
 
 **-프로세스의 특성 분류**
 
@@ -819,7 +819,7 @@ int main()
 
   : 계산 위주의 job. 빈도가 적지만 길게 쓴다.(few very long CPU bursts)
 
-
+<br/>
 
 **-CPU Scheduler & Dispatcher**
 
@@ -833,7 +833,7 @@ int main()
 
   이 과정을 문맥교환(context switch)이라고 한다.
 
-
+<br/>
 
 **-CPU 스케줄링이 필요한 경우**
 
@@ -846,14 +846,14 @@ int main()
 
 => 여기서 이슈! (누구에게 CPU를 줄 것인가? / CPU를 계속 쓰게할지 중간에 뺏을지?)
 
-
+<br/>
 
 **-스케줄링 방법**
 
 - 비선점형 (**non preemptive**) - 1), 4)번과 같이 CPU를 **자진 반납**
 - 선점형 (**preemptive**) - 2), 3)번과 같이 CPU를 강제로 **빼앗음** (현대적 방법)
 
-
+<br/>
 
 **-Scheduling Criteria** (스케줄링 성능척도)
 
@@ -893,7 +893,7 @@ int main()
 
     (첫 번째 요리가 나오기까지 걸리는 시간)
 
-    
+ <br/>
 
 **-Scheduling Algorithms**
 
@@ -905,7 +905,7 @@ int main()
 - Multilevel Queue
 - Multilevel Feedback Queue
 
-
+<br/>
 
 **-1. FCFS (First-Come First-Served)**
 
@@ -913,7 +913,7 @@ int main()
 
 - **ex1**) 프로세스 도착순서 P1, P2, P3 (burst time은 각 24, 3, 3)
 
-  (그림)
+![FCFS ex1](https://user-images.githubusercontent.com/58247800/100880205-cdd44200-34ef-11eb-957b-581a1c242ab4.png)
 
   - waiting time = ( 0; 24; 27)
 
@@ -921,11 +921,11 @@ int main()
 
 가장 먼저 온 P1이 제일 오래 걸릴 경우, 응답시간과 평균대기시간이 늘어난다. (interactive하지도, 효율적이지도 않다)
 
-
+<br/>
 
 - **ex2**) 프로세스 도착순서 P2, P3, P1
 
-  (그림)
+![FCFS ex2](https://user-images.githubusercontent.com/58247800/100880211-d0369c00-34ef-11eb-85ed-6386f7106c55.png)
 
   - waiting time = (6; 0; 3)
   - 평균 대기시간 = 3
@@ -934,7 +934,7 @@ ex1 보다 훨씬 효율적. 제일 **처음에 도착한 P에 따라 대기시�
 
 즉, 이 스케줄링에서는 **Convoy effect** (short process behind long process. 앞에 똥차가 버티고 있는..) 라는 문제점이 생긴다. (코스요리 손님 뒤에 짜장면 손님..)
 
-
+<br/>
 
 **-2. SJF (Shortest-Job-First)**
 
@@ -942,7 +942,7 @@ ex1 보다 훨씬 효율적. 제일 **처음에 도착한 P에 따라 대기시�
 
 즉, CPU burst time이 가장 짧은 프로세스를 제일 먼저 스케줄
 
-
+<br/>
 
 - Two schemes:
 
@@ -954,7 +954,7 @@ ex1 보다 훨씬 효율적. 제일 **처음에 도착한 P에 따라 대기시�
 
     : 현재 수행 중인 프로세스의 **남은 burst time** 보다, **더 짧은 CPU burst time**을 가지는 새로운 프로세스가 도착하면, CPU를 빼앗김. 이 방법은 **SRTF** (Shortest-Remaining-Time-First) 라고도 부른다.
 
-
+<br/>
 
 **SJF is Optimal** (평균 대기시간을 최소화함)
 
@@ -962,23 +962,23 @@ ex1 보다 훨씬 효율적. 제일 **처음에 도착한 P에 따라 대기시�
 
 - **ex**) of Non-preemptive SJF
 
-(그림)
+![SJF ex1](https://user-images.githubusercontent.com/58247800/100880224-d4fb5000-34ef-11eb-934f-fa8a61b94bc9.png)
 
 평균 대기시간 = (0 + 6 + 3 + 7) / 4 = 4
 
 CPU를 **다 쓰고 나가는 시점**에 스케줄링 결정
 
-
+<br/>
 
 - **ex**) of Preemptive SJF
 
-(그림)
+![SJF ex2](https://user-images.githubusercontent.com/58247800/100880230-d6c51380-34ef-11eb-9e91-2d81153200db.png)
 
 평균 대기시간 = (9 + 1 + 0 + 2) / 4 = 3 (가장 짧음)
 
 **새 프로세스가 도착하는 시점**에도 스케줄링이 결정됨!
 
-
+<br/>
 
 - 문제점
 
@@ -986,7 +986,7 @@ CPU를 **다 쓰고 나가는 시점**에 스케줄링 결정
 
   - CPU 사용시간을 미리 알 수 없다. (이번에 내가 얼마나 쓰고 나갈지 모른다.. 예측만 가능!)
 
-
+<br/>
 
 **-다음 번 CPU burst time의 예측**
 
@@ -1000,17 +1000,13 @@ CPU를 **다 쓰고 나가는 시점**에 스케줄링 결정
 
 식을 풀면, 이런 결과가 나옴..
 
-(그림)
+![식](https://user-images.githubusercontent.com/58247800/100880252-da589a80-34ef-11eb-8148-1968a320fa24.png)
 
 α와 (1-α)가 둘 다 1 이하이므로 후속 term은 선행 term보다 더 적은 가중치 값을 가진다.
 
 즉, 더 이전의 실제 실행 시간을 적게 반영하는 것이다.
 
-
-
-극단적인 경우 (a=0: )
-
-
+<br/>
 
 **-Priority Scheduling**
 
@@ -1022,7 +1018,7 @@ CPU를 **다 쓰고 나가는 시점**에 스케줄링 결정
 
 Priority = 다음 CPU burst time을 예측한 것
 
-
+<br/>
 
 - 문제점
 
@@ -1034,7 +1030,7 @@ Priority = 다음 CPU burst time을 예측한 것
 
   ​						(경로우대..)
 
-  
+<br/>  
 
 **-RR (Round Robin)**
 
@@ -1065,19 +1061,19 @@ Priority = 다음 CPU burst time을 예측한 것
 
 - **ex**) of RR (with Time Quantum = 20)
 
-  (그림)
+![RR](https://user-images.githubusercontent.com/58247800/100880260-dcbaf480-34ef-11eb-842d-da52a2250169.png)
 
   일반적으로 SJF 보다 average turnaround time / waiting time이 길지만, **response time은 더 짧다**. 보통 짧은 작업 긴 작업이 섞여있기 때문에 RR이 효과가 있다.
 
   (극단적일 경우- 모든 프로세스의 사용시간 같을 시, 굳이 난도질할 필요 없이 q time을 길게 잡는다.)
 
-
+<br/>
 
 **-Multilevel Queue**
 
 : 그동안 한 줄 서기를 했는데, 여러 줄로 CPU를 기다리는 줄을 세운다. 줄마다 우선 순위가 다르고, 위로 갈수록 우선순위가 높다. (성골, 진골, 6두품, 노비...) 태어난 신분에 따라 영원히 그 줄로 살아야 함. (차별적)
 
-(그림)
+![multilevel큐](https://user-images.githubusercontent.com/58247800/100880280-e2183f00-34ef-11eb-9b89-d00ea4d80f47.png)
 
 - **Ready Queue를 여러 개로 분할**
 
@@ -1101,7 +1097,7 @@ Priority = 다음 CPU burst time을 예측한 것
 
     (ex. 80% 는 foreground걸 RR방식으로, 20%는 background걸 FCFS방식으로) 
 
-    
+<br/>    
 
 **-Multilevel Feedback Queue**
 
@@ -1113,7 +1109,7 @@ Priority = 다음 CPU burst time을 예측한 것
 
 미리 예측할 필요가 없으며, **진행시간이 짧은 프로세스가 (RR보다)우대**받는다! 
 
-
+<br/>
 
 에이징을 이와 같은 방식으로 구현할 수 있다.
 
@@ -1131,7 +1127,7 @@ Priority = 다음 CPU burst time을 예측한 것
 
 - ex) of Multilevel feedback queue
 
-  (그림)
+![multilevel feedback 큐](https://user-images.githubusercontent.com/58247800/100880290-e47a9900-34ef-11eb-896c-1cc839897b4e.png)
 
   - Three queues
 
@@ -1148,7 +1144,7 @@ Priority = 다음 CPU burst time을 예측한 것
     - Q1에 줄서서 기다렸다가, CPU를 잡아서 16ms 동안 수행됨
     - 16ms에 끝내지 못할 경우, queue Q2로 쫓겨남
 
-
+<br/>
 
 **-Multiple-Processor Scheduling**
 
@@ -1172,7 +1168,7 @@ Priority = 다음 CPU burst time을 예측한 것
 
   : 하나의 CPU가 시스템 데이터의 접근과 공유를 책임지고, 나머지 CPU는 거기에 따름.
 
-
+<br/>
 
 **-Real-Time Scheduling**
 
@@ -1186,7 +1182,7 @@ Priority = 다음 CPU burst time을 예측한 것
 
   : soft real-time task는 다른 일반 프로세스에 비해 높은 priority를 갖도록 해야함.
 
-
+<br/>
 
 **-Thread Scheduling**
 
@@ -1198,13 +1194,13 @@ Priority = 다음 CPU burst time을 예측한 것
 
   : kernel level thread의 경우, 일반 프로세스와 마찬가지로 커널의 단기 스케줄러가 어떤 thread를 스케줄할지 결정
 
-
+<br/>
 
 **-Algorithm Evaluation** (어떤 알고리즘이 좋은지 평가방법)
 
 - **Queueing models** (이론적)
 
-  (그림)
+![알고리즘 평가척도](https://user-images.githubusercontent.com/58247800/100880320-ea707a00-34ef-11eb-88a1-4b28481b6858.png)
 
   : 확률 분포로 주어지는 **arrival rate**(도착률)와 **service rate**(처리율) 등을 통해 각종 performance index 값을 계산
 
