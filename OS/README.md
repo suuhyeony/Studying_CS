@@ -785,3 +785,433 @@ int main()
   - **Indirect Communication** : **Mailbox**(또는 port)를 통해 메시지를 간접 전달 (아무나에게 보낼 수 있음)
 
     ![indirect 메시지](https://user-images.githubusercontent.com/58247800/100582630-dfb9b780-332c-11eb-976d-d48d22ecaab1.png)
+
+
+
+## Ch5. CPU 스케줄링
+
+**-CPU and I/O Bursts in Program Execution**
+
+: CPU를 연속적으로 수행하는 단계와 I/O를 수행하는 단계가 연속적으로 나옴.
+
+(그림)
+
+
+
+**-CPU-burst Time의 분포**
+
+(그림)
+
+=> 여러 종류의 job(=process)이 섞여 있으므로, **'CPU 스케줄링'이 필요**하다.
+
+- Interactive job이 오래 기다리지 않도록 적절한 응답 제공 요망 (interactive한 I/O job에게)
+- CPU와 I/O장치 등 시스템 자원을 골고루 효율적으로 사용
+
+
+
+**-프로세스의 특성 분류**
+
+- **I/O-bound process**
+
+  : CPU를 잡고 계산하는 시간보다, I/O에 많은 시간이 필요한 job. 짧게 쓰는데 빈도가 많다.(many short CPU bursts) 주로 사람과 interaction하는 job.
+
+- **CPU-bound process**
+
+  : 계산 위주의 job. 빈도가 적지만 길게 쓴다.(few very long CPU bursts)
+
+
+
+**-CPU Scheduler & Dispatcher**
+
+- CPU Scheduler (OS 안에서 수행되는 코드)
+
+  : ready 상태의 프로세스 중에서, 이번에 CPU를 줄 프로세스를 고른다. (결정)
+
+- Dispatcher (OS 안에서 수행되는 코드)
+
+  : CPU의 제어권을 CPU scheduler에 의해 선택된 프로세스에게 넘긴다. (준다)
+
+  이 과정을 문맥교환(context switch)이라고 한다.
+
+
+
+**-CPU 스케줄링이 필요한 경우**
+
+: 프로세스에게 다음의 상태 변화가 있을 때.
+
+- 1) Running -> Blocked (ex. I/O 요청하는 시스템콜)
+- 2) Running -> Ready (ex. 할당시간 만료로 timer interrupt)
+- 3) Blocked -> Ready (ex. I/O 완료 후 인터럽트)
+- 4) Terminate
+
+=> 여기서 이슈! (누구에게 CPU를 줄 것인가? / CPU를 계속 쓰게할지 중간에 뺏을지?)
+
+
+
+**-스케줄링 방법**
+
+- 비선점형 (**non preemptive**) - 1), 4)번과 같이 CPU를 **자진 반납**
+- 선점형 (**preemptive**) - 2), 3)번과 같이 CPU를 강제로 **빼앗음** (현대적 방법)
+
+
+
+**-Scheduling Criteria** (스케줄링 성능척도)
+
+: Performance Index (=performance Measure, 성능척도) (중국집 비유)
+
+- 시스템 입장
+
+  - **CUP utilization (이용률)**
+
+    : CPU가 놀지 않고 **일한 시간**. CPU를 가능한 바쁘게 유지한다. (이용률을 높게)
+
+    (주방장이 얼마나 많이 일했는가?)
+
+  - **Throughput (처리량)**
+
+    : 주어진 시간동안 **몇 개의 일**을 완료했는지? (처리량 많게)
+
+    (손님이 얼마나 다녀갔는가?)
+
+- 프로세스(고객) 입장
+
+  - **Turnaround time (소요시간, 반환시간)**
+
+    : 프로세스가 CPU를 쓰러 들어와서(ready), **다 쓰고 나갈 때까지** 걸리는 시간.
+
+    (손님이 와서 다 먹기까지 시간)
+
+  - **Waiting time (대기시간)**
+
+    : 프로세스가 ready 큐에서 **순수하게 기다린** 시간 (기다린 시간을 모두 합친 시간)
+
+    (손님이 기다리는 시간)
+
+  - **Response time (응답시간)**
+
+    : ready 큐에 들어와서 **처음으로 CPU를 얻기까지** 걸리는 시간.
+
+    (첫 번째 요리가 나오기까지 걸리는 시간)
+
+    
+
+**-Scheduling Algorithms**
+
+- FCFS (First-Come First-Served)
+- SJF (Shortest-Job-First)
+- SRTF (Shortest-Remaining-Time-First)
+- Priority Scheduling
+- RR (Round Robin)
+- Multilevel Queue
+- Multilevel Feedback Queue
+
+
+
+**-1. FCFS (First-Come First-Served)**
+
+: 먼저 온 순서대로 처리 (**비선점형**에 포함. 사람의 세계에서.. 은행/공중 화장실) **비효율적**.
+
+- **ex1**) 프로세스 도착순서 P1, P2, P3 (burst time은 각 24, 3, 3)
+
+  (그림)
+
+  - waiting time = ( 0; 24; 27)
+
+  - 평균 대기시간 = 17
+
+가장 먼저 온 P1이 제일 오래 걸릴 경우, 응답시간과 평균대기시간이 늘어난다. (interactive하지도, 효율적이지도 않다)
+
+
+
+- **ex2**) 프로세스 도착순서 P2, P3, P1
+
+  (그림)
+
+  - waiting time = (6; 0; 3)
+  - 평균 대기시간 = 3
+
+ex1 보다 훨씬 효율적. 제일 **처음에 도착한 P에 따라 대기시간이 달라진다**!
+
+즉, 이 스케줄링에서는 **Convoy effect** (short process behind long process. 앞에 똥차가 버티고 있는..) 라는 문제점이 생긴다. (코스요리 손님 뒤에 짜장면 손님..)
+
+
+
+**-2. SJF (Shortest-Job-First)**
+
+: **짧게 걸리는 프로세스 먼저** 처리. 각 프로세스의 **다음 번 CPU burst time**(예측값)을 가지고 스케줄링에 활용. (볼 일을 제일 빨리 볼 수 있는 사람부터 화장실 가기)
+
+즉, CPU burst time이 가장 짧은 프로세스를 제일 먼저 스케줄
+
+
+
+- Two schemes:
+
+  - Non-preemptive
+
+    : 일단 CPU를 잡으면, 더 빠른 애가 오더라도 이번 CPU burst가 완료될 때까지 CPU를 선점 당하지 않음.
+
+  - **Preemptive**
+
+    : 현재 수행 중인 프로세스의 **남은 burst time** 보다, **더 짧은 CPU burst time**을 가지는 새로운 프로세스가 도착하면, CPU를 빼앗김. 이 방법은 **SRTF** (Shortest-Remaining-Time-First) 라고도 부른다.
+
+
+
+**SJF is Optimal** (평균 대기시간을 최소화함)
+
+: 주어진 프로세스들에 대해 **minimum average waiting time**을 보장한다. (**선점형 ver.**)
+
+- **ex**) of Non-preemptive SJF
+
+(그림)
+
+평균 대기시간 = (0 + 6 + 3 + 7) / 4 = 4
+
+CPU를 **다 쓰고 나가는 시점**에 스케줄링 결정
+
+
+
+- **ex**) of Preemptive SJF
+
+(그림)
+
+평균 대기시간 = (9 + 1 + 0 + 2) / 4 = 3 (가장 짧음)
+
+**새 프로세스가 도착하는 시점**에도 스케줄링이 결정됨!
+
+
+
+- 문제점
+
+  - **starvation(기아현상)** - 내 차례가 되기 전에 자꾸 나보다 덜 걸리는 애들이 도착하면 ㅠㅠ... 난 언제쓰냐구..
+
+  - CPU 사용시간을 미리 알 수 없다. (이번에 내가 얼마나 쓰고 나갈지 모른다.. 예측만 가능!)
+
+
+
+**-다음 번 CPU burst time의 예측**
+
+: 추정만이 가능하다. (**과거의 CPU burst time을 이용해 추정**.)
+
+- **exponential averaging** 방법 사용
+  - 1) t(n) = 실제 CPU 사용 시간 (과거 자료로 이미 주어진) 
+  - 2) τ(n+1) = CPU 사용을 예측한 시간 (n+1번 째)
+  - α, 0 <= α <= 1
+  - Define : τ * (n+1) = α * t(n) + (1-α) * τ(n) => 1), 2)를 일정 비율씩 반영한다
+
+식을 풀면, 이런 결과가 나옴..
+
+(그림)
+
+α와 (1-α)가 둘 다 1 이하이므로 후속 term은 선행 term보다 더 적은 가중치 값을 가진다.
+
+즉, 더 이전의 실제 실행 시간을 적게 반영하는 것이다.
+
+
+
+극단적인 경우 (a=0: )
+
+
+
+**-Priority Scheduling**
+
+: 우선순위가 높은 프로세스부터 스케줄링. (추상적 개념) 각 프로세스마다 우선순위 번호가 할당되어 있다. highest priority(=smallest integer)를 가진 프로세스에게 CPU할당.
+
+선점형/비선점형 두 가지 ver. 있음.
+
+*SJF는 일종의 Priority scheduling이다.
+
+Priority = 다음 CPU burst time을 예측한 것
+
+
+
+- 문제점
+
+  **Starvation(기아현상)** : 특정 프로세스가 지나치게 차별받는다. 낮은 우선순위의 프로세스는 영원히 실행될 수 없음.
+
+- 해결책
+
+  **Aging(노화)** : 아무리 우선순위가 낮아도, **오래 기다리게 되면 우선순위가 올라가도록** 해준다.
+
+  ​						(경로우대..)
+
+  
+
+**-RR (Round Robin)**
+
+: 각 프로세스는 **동일한 크기의 할당시간**(**time quantum** - 일반적으로 10~100 miliseconds)을 가짐. (선점형)
+
+할당시간이 지나면 프로세스는 선점당하고, ready 큐의 맨 뒤에 가서 다시 줄 섬. (**현대 컴퓨터 방식**)
+
+(5분 동안만 사용할 수 있는 홍대 화장실... 5분 뒤 문열림ㅋㅋ)
+
+- 장점
+
+  - 누구나 CPU를 조금이라도 맛볼 수 있어 **응답시간이 빨라진다**.
+
+  - **기다리는 시간이 본인의 작업 처리시간과 비례한다.**
+
+  n개의 프로세스가 ready큐에 있고, 할당시간이 q time unit인 경우, 각 프로세스는 최대 q time unit 단위로 CUP시간의 1/n을 얻는다.
+
+  => **어떤 프로세스도 (n-1)q time unit 이상 기다리지 않는다**.
+
+  - 예측 시간을 계산할 필요가 없다.
+
+- performance (극단적 상황)
+
+  - q large -> FCFS
+  - q small -> context switch 오버헤드가 커짐
+
+  => **적당한 할당 시간이 필요**하다.
+
+- **ex**) of RR (with Time Quantum = 20)
+
+  (그림)
+
+  일반적으로 SJF 보다 average turnaround time / waiting time이 길지만, **response time은 더 짧다**. 보통 짧은 작업 긴 작업이 섞여있기 때문에 RR이 효과가 있다.
+
+  (극단적일 경우- 모든 프로세스의 사용시간 같을 시, 굳이 난도질할 필요 없이 q time을 길게 잡는다.)
+
+
+
+**-Multilevel Queue**
+
+: 그동안 한 줄 서기를 했는데, 여러 줄로 CPU를 기다리는 줄을 세운다. 줄마다 우선 순위가 다르고, 위로 갈수록 우선순위가 높다. (성골, 진골, 6두품, 노비...) 태어난 신분에 따라 영원히 그 줄로 살아야 함. (차별적)
+
+(그림)
+
+- **Ready Queue를 여러 개로 분할**
+
+  - **foreground** (interactive한 job)
+  - **background**(batch - no human interaction)
+
+- 각 큐는 **독립적인 스케줄링 알고리즘**을 가진다.
+
+  - foreground - RR (응답시간을 짧게 하기 때문에)
+  - background -FCFS (응답시간을 짧게 할 필요가 없어서)
+
+- 큐에 대한 스케줄링이 필요하다.
+
+  - **Fixed priority scheduling**
+
+    : foreground에서 모두 스케줄링하고, background거 스케줄링 -> starvation 발생
+
+  - **Time slice**
+
+    : 각 큐에 **CPU Time을 적절한 비율로 할당** (starvation 방지)
+
+    (ex. 80% 는 foreground걸 RR방식으로, 20%는 background걸 FCFS방식으로) 
+
+    
+
+**-Multilevel Feedback Queue**
+
+프로세스가 다른 큐로 이동(승격/떨어짐) 가능.
+
+보통 처음 들어오는 프로세스에게 제일 우선순위 높은 큐(할당시간은 적음)를 준다.
+
+그 안에 끝나지 못하면, 아래 큐로 강등되고, 기다렸다가 위쪽 큐가 비었을 때 다시 진행된다.
+
+미리 예측할 필요가 없으며, **진행시간이 짧은 프로세스가 (RR보다)우대**받는다! 
+
+
+
+에이징을 이와 같은 방식으로 구현할 수 있다.
+
+- 고려사항
+  - 프로세스를 어느 줄에 넣을지?
+  - 기아현상 방지
+  - 몇개 큐?
+  - 떨어지고 올라가는 기준
+- Multilevel-feedback queue scheduler를 정의하는 파라미터
+  - queue의 수
+  - 각 queue의 scheduling algorithm
+  - Process를 상위 queue로 보내는 기준
+  - Process를 하위 queue로 내쫓는 기준
+  - Process가 CPU 서비스를 받으려할 때, 들어갈 queue를 정하는 기준
+
+- ex) of Multilevel feedback queue
+
+  (그림)
+
+  - Three queues
+
+    - Q0 ) time quantum 8 miliseconds
+    - Q1 ) time quantum 16 miliseconds
+    - Q2 ) FCFS
+
+  - Scheduling
+
+    : new job이 queue Q0 으로 들어감.
+
+    - CPU를 잡아서 할당시간 8ms 동안 수행됨
+    - 8ms 동안 끝내지 못하면, queue Q1으로 내려감
+    - Q1에 줄서서 기다렸다가, CPU를 잡아서 16ms 동안 수행됨
+    - 16ms에 끝내지 못할 경우, queue Q2로 쫓겨남
+
+
+
+**-Multiple-Processor Scheduling**
+
+: CPU가 여러 개인 경우 (스케줄링이 더 복잡하다)
+
+- Homogeneous Processor인 경우 (한 줄 서기)
+
+  : 큐에 한 줄로 세워서 각 프로세서가 알아서 꺼내가게 할 수 있다. 반드시 특정 프로세서에서 수행되어야 하는 프로세스 존재 시, 문제가 더 복잡해진다.
+
+- Load sharing
+
+  : 일부 프로세서에 job이 몰리지 않도록 부하를 적절히 공유하는 매커니즘 필요. 
+
+  별개의 큐를 두는 방법 vs 공동 큐를 사용하는 방법
+
+- Symmetric Multiprocessing(SMP)
+
+  : 각 CPU가 알아서 스케줄링 결정 (모든 CPU가 대등)
+
+- Asymmetric Multiprocessing
+
+  : 하나의 CPU가 시스템 데이터의 접근과 공유를 책임지고, 나머지 CPU는 거기에 따름.
+
+
+
+**-Real-Time Scheduling**
+
+: real-time job을 미리 배치해서, 데드라인을 보장하는게 중요하다.
+
+- Hard real-time systems
+
+  : hard real-time task는 정해진 시간 안에 **반드시** 끝내도록 스케줄링 해야함.
+
+- Soft real-time systems
+
+  : soft real-time task는 다른 일반 프로세스에 비해 높은 priority를 갖도록 해야함.
+
+
+
+**-Thread Scheduling**
+
+- Local Scheduling
+
+  : user level thread의 경우, 사용자 수준의 thread library에 의해 어떤 thread를 스케줄할지 결정 (사용자 프로세스가 직접)
+
+- Global Scheduling
+
+  : kernel level thread의 경우, 일반 프로세스와 마찬가지로 커널의 단기 스케줄러가 어떤 thread를 스케줄할지 결정
+
+
+
+**-Algorithm Evaluation** (어떤 알고리즘이 좋은지 평가방법)
+
+- **Queueing models** (이론적)
+
+  (그림)
+
+  : 확률 분포로 주어지는 **arrival rate**(도착률)와 **service rate**(처리율) 등을 통해 각종 performance index 값을 계산
+
+- **Implementation** (구현) & **Measurement** (성능 측정)
+
+  : 실제 시스템에 알고리즘을 구현하여 실제작업(workload)에 대해 성능을 측정 비교
+
+- **Simulation** (모의 실험)
+
+  : 알고리즘을 모의 프로그램으로 작성 후, **trace**(input data)를 입력으로 하여 결과 비교
