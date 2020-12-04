@@ -1213,7 +1213,7 @@ Priority = 다음 CPU burst time을 예측한 것
   : 알고리즘을 모의 프로그램으로 작성 후, **trace**(input data)를 입력으로 하여 결과 비교
 
 
-
+<br />
 
 
 ## Ch6. 프로세스 동기화
@@ -1226,7 +1226,7 @@ Priority = 다음 CPU burst time을 예측한 것
 
 일관성 유지를 위해서는 **협력 프로세스 간의 실행 순서를 정해주는** 매커니즘(동기화)이 필요.
 
-
+<br />
 
 **-데이터의 접근**
 
@@ -1238,7 +1238,7 @@ Priority = 다음 CPU burst time을 예측한 것
 
 데이터를 읽기만 하면 문제가 없는데, **데이터를 수정하게 되면 누가 먼저 읽어 갔는지가 중요**하게 됨.
 
-
+<br />
 
 **-Race Condition (경쟁상태)**
 
@@ -1252,6 +1252,8 @@ S-box(Memory Address space)를 공유하는 E-box(CPU Process)가 여럿있는 �
 
 한 군데에서 데이터를 가져와 1 증가시키는 도중에, 다른 한 곳에서 또 데이터를 가져가 1 감소시키면, (count--) 의 결과만 반영됨.
 
+<br />
+
 그렇다면, 언제 race condition이 발생할까?
 
 - Multiprocessor system
@@ -1262,7 +1264,7 @@ S-box(Memory Address space)를 공유하는 E-box(CPU Process)가 여럿있는 �
 
 => race condition을 막기 위해서는 **동시접근(concurrent process)은 동기화되어야** 함.
 
-
+<br />
 
 **-OS에서 race condition이 언제 발생할까?**
 
@@ -1270,7 +1272,7 @@ S-box(Memory Address space)를 공유하는 E-box(CPU Process)가 여럿있는 �
 - 2. Process가 system call을 하여 kernel mode로 수행 중인데 context switch 발생 시
 - 3. Multiprocessor에서 shared memory 내의 kernel data
 
-
+<br />
 
 위의 세 가지 경우를 자세히 알아보자.
 
@@ -1286,13 +1288,13 @@ S-box(Memory Address space)를 공유하는 E-box(CPU Process)가 여럿있는 �
 
 결과적으로 count--계산 결과는 반영되지 않음. (count++부분을 저장했다가 interrupt를 처리한 거라서)
 
-
+<br />
 
 - 어떻게 share할 수 있을까? 
 
   중요한 계산 중에는 interrupt 들어와도 처리하지 않고, 다 끝나고 처리.
 
-
+<br />
 
 **-OS에서의 race condition (2)**
 
@@ -1300,7 +1302,7 @@ S-box(Memory Address space)를 공유하는 E-box(CPU Process)가 여럿있는 �
 
 (**커널에서 코드 수행 중인데 CPU를 preempt 당한다면?**)
 
-
+<br />
 
 (그림)
 
@@ -1308,7 +1310,7 @@ S-box(Memory Address space)를 공유하는 E-box(CPU Process)가 여럿있는 �
 - 그러나 system call하는 동안에는 커널 주소공간의 data를 access하게 됨(share)
 - 이 작업 중간에 CPU를 preempt 해가면 race condition 발생
 
-
+<br />
 
 **-if you preempt CPU while in kernel mode**
 
@@ -1324,7 +1326,7 @@ S-box(Memory Address space)를 공유하는 E-box(CPU Process)가 여럿있는 �
 
 결과적으로 프로세스B의 count++는 반영되지 않음! (문맥이 프로세스A걸 저장하고 있기 때문에)
 
-
+<br />
 
 - 해결책)
 
@@ -1332,7 +1334,7 @@ S-box(Memory Address space)를 공유하는 E-box(CPU Process)가 여럿있는 �
 
   커널 모드에서 사용자 모드로 돌아갈 때 preempt.
 
-
+<br />
 
 **-OS에서의 race condition (3)**
 
@@ -1347,13 +1349,13 @@ multiprocessor의 경우, interrupt enable / disable로 해결되지 않음.
 - 방법1) 한 번에 하나의 CPU만이 커널에 들어갈 수 있도록 하고, 하나의 커널을 lock으로 막고, 커널을 빠져나올 때 unlock. (**커널 전체를 lock**하기 때문에 비효율적)
 - 방법2) 커널 내부에 있는 **각 공유 데이터**에 접근할 때마다 그 데이터에 대한 lock/unlock
 
-
+<br />
 
 **-The Critical-Section 문제**
 
 : n개의 프로세스가 공유 데이터를 동시에 사용하길 원하는 경우, 각 프로세스의 code segment에는 공유 데이터를 접근하는 코드인 '**critical-section**'(임계구역)이 존재.
 
-
+<br />
 
 - 과제
 
@@ -1361,7 +1363,7 @@ multiprocessor의 경우, interrupt enable / disable로 해결되지 않음.
 
   (그림)
 
-
+<br />
 
 **-Initial Attempts to Solve Problem**
 
@@ -1380,7 +1382,7 @@ multiprocessor의 경우, interrupt enable / disable로 해결되지 않음.
 
 - 프로세스들은 수행의 동기화를 위해 몇몇 변수를 공유할 수 있다. (synchronization variable)
 
-
+<br />
 
 **-프로그램적 해결법의 충족 조건**
 
@@ -1400,7 +1402,7 @@ multiprocessor의 경우, interrupt enable / disable로 해결되지 않음.
 
 가정) 모든 프로세스의 수행 속도는 > 0, 프로세스들 간의 상대적 수행 속도는 가정X.
 
-
+<br />
 
 **-Algorithm 1**
 
@@ -1439,13 +1441,13 @@ multiprocessor의 경우, interrupt enable / disable로 해결되지 않음.
 
 즉, **과잉양보 현상**이 발생한다.
 
-
+<br />
 
 *과잉양보
 
 : 반드시 한 번씩 교대로 들어가야만 함 (swap-turn). 그가 turn 값을 내 값으로 바꿔 줘야만 내가 들어갈 수 있음. 특정 프로세스가 더 빈번히 critical section에 들어가야 한다면?
 
-
+<br />
 
 **-Algorithm 2**
 
@@ -1457,7 +1459,7 @@ multiprocessor의 경우, interrupt enable / disable로 해결되지 않음.
 
   - Pi 가 CS에 들어가고 싶을 때 (**flag[i] == true**)
 
-  
+  <br />
 
 - Process Pi
 
@@ -1473,7 +1475,7 @@ do {
 
 => mutual exclusion은 만족하지만 progress 요구를 충족하지 못한다. 한 명이 깃발을 들고 CPU를 뺏긴 뒤, 다른 한 명이 깃발 들 경우, 둘 다 2행까지 수행 후, 끊임없이 양보 ㅋㅋ
 
-
+<br />
 
 **-Algorithm 3**
 
@@ -1493,7 +1495,7 @@ do {
 
 => 3가지 조건을 모두 충족한다. 하지만 **Busy Waiting(=spin lock)** 발생. (상대가 turn을 바꿔주지 않는 이상, 계속 CPU와 메모리를 쓰면서 wait. 비효율적)
 
-
+<br />
 
 **-Synchronization Hardware**
 
@@ -1507,7 +1509,7 @@ do {
 
 a라는 데이터를 읽어와서 값을 1로 바꿔준다. (즉, 읽고 쓰기를 동시에!)
 
-
+<br />
 
 - Mutual Exclusion with Test & Set
 
@@ -1526,7 +1528,7 @@ do {
 }		
 ```
 
-
+<br />
 
 **-Semaphores**
 
@@ -1549,7 +1551,7 @@ do {
   S++;
   ```
 
-  
+<br />
 
 **-Critical Section of n Process**
 
@@ -1576,7 +1578,7 @@ Block & Wack up 방식의 구현 (= sleep lock)으로 해결 가능.
 
 자원이 없을 때, block 됐다가, 자원 생기면 깨어남.
 
-
+<br />
 
 **-Block / Wackup Implementation**
 
@@ -1604,7 +1606,7 @@ Block & Wack up 방식의 구현 (= sleep lock)으로 해결 가능.
 
   semaphore를 기다리면서, 잠들어 있는 PCB를 연결.
 
-  
+<br />
 
 **- Implementation : block/wakeup version of P() & V()**
 
@@ -1621,7 +1623,7 @@ Block & Wack up 방식의 구현 (= sleep lock)으로 해결 가능.
   }
   ```
 
-  
+  <br />
 
 - V(S)
 
@@ -1636,7 +1638,7 @@ Block & Wack up 방식의 구현 (= sleep lock)으로 해결 가능.
 
   => 여기서 음수라는 것은 누군가 자원을 쓰기 위해 기다리고 있다는 의미.
 
-  
+  <br />
 
 **-which is better?**
 
@@ -1648,7 +1650,7 @@ Block & Wack up 방식의 구현 (= sleep lock)으로 해결 가능.
     - critical section 길이가 길면, Block/wakeup이 적당
     - critical section 길이가 매우 짧으면, 이 때의 오버헤드가  busy-wait 오버헤드보다 더 커질 수 있음.
 
-
+<br />
 
 **-Two types of Semaphores**
 
@@ -1662,7 +1664,7 @@ Block & Wack up 방식의 구현 (= sleep lock)으로 해결 가능.
   - 0 또는 1 값만 가질 수 있는 semaphore
   - 주로 mutual exclusion (lock/unlock)에 사용
 
-  
+<br />
 
 **-Deadlock and Starvation**
 
