@@ -1594,9 +1594,9 @@ Block & Wack up 방식의 구현 (= sleep lock)으로 해결 가능.
 
 - block과 wakeup을 다음과 같이 가정
 
-  - block : 커널은 block을 호출한 프로세스를 suspend시킴.
+  - block : 커널은 block을 호출한 프로세스를 suspend시킴. 이 프로세스의 PCB를 semaphore에 대한 wait 큐에 넣음.
 
-     			이 프로세스의 PCB를 semaphore에 대한 wait 큐에 넣음.
+<br />
 
   - wakeup(P) : block된 프로세스 P를 wakeup 시킴.
                 이 프로세스의 PCB를 ready큐로 옮김.
