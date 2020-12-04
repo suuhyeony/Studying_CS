@@ -1514,7 +1514,6 @@ a라는 데이터를 읽어와서 값을 1로 바꿔준다. (즉, 읽고 쓰기�
 - Mutual Exclusion with Test & Set
 
   - Sychronization variable:
-
      	boolean lock = false;
 
 ```c
@@ -1599,8 +1598,7 @@ Block & Wack up 방식의 구현 (= sleep lock)으로 해결 가능.
      			이 프로세스의 PCB를 semaphore에 대한 wait 큐에 넣음.
 
   - wakeup(P) : block된 프로세스 P를 wakeup 시킴.
-
-    ​					이 프로세스의 PCB를 ready큐로 옮김.
+                이 프로세스의 PCB를 ready큐로 옮김.
 
   (그림)
 
