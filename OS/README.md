@@ -1211,3 +1211,475 @@ Priority = 다음 CPU burst time을 예측한 것
 - **Simulation** (모의 실험)
 
   : 알고리즘을 모의 프로그램으로 작성 후, **trace**(input data)를 입력으로 하여 결과 비교
+
+
+
+
+
+## Ch6. 프로세스 동기화
+
+**-Process Synchronization**
+
+: 하나의 자원을 한 순간에 하나의 프로세스만이 이용하도록 제어하는 것.
+
+**공유 데이터의 동시 접근**은 **데이터의 불일치 문제**를 발생시킬 수 있다.
+
+일관성 유지를 위해서는 **협력 프로세스 간의 실행 순서를 정해주는** 매커니즘(동기화)이 필요.
+
+
+
+**-데이터의 접근**
+
+: 컴퓨터 시스템 안에서 데이터에 어떻게 접근할까?
+
+(그림)
+
+데이터가 저장되어 있는 위치로부터 데이터를 읽어와서 연산한 뒤, 연산한 결과를 이전에 저장되어있던 그 위치에 다시 저장.
+
+데이터를 읽기만 하면 문제가 없는데, **데이터를 수정하게 되면 누가 먼저 읽어 갔는지가 중요**하게 됨.
+
+
+
+**-Race Condition (경쟁상태)**
+
+: 여러 프로세스들이 **동시에 공유 데이터를 접근**하는 상황.
+
+데이터의 최종 연산 결과는 **마지막에 그 데이터를 다룬 프로세스에 따라 달라짐**.
+
+(그림)
+
+S-box(Memory Address space)를 공유하는 E-box(CPU Process)가 여럿있는 경우 Race condition의 가능성이 있다.
+
+한 군데에서 데이터를 가져와 1 증가시키는 도중에, 다른 한 곳에서 또 데이터를 가져가 1 감소시키면, (count--) 의 결과만 반영됨.
+
+그렇다면, 언제 race condition이 발생할까?
+
+- Multiprocessor system
+
+- 공유 메모리를 접근하는 루틴들 간 
+
+  (ex. 커널모드 수행 중, 인터럽트로 커널모드 다른 루틴 수행 시)
+
+=> race condition을 막기 위해서는 **동시접근(concurrent process)은 동기화되어야** 함.
+
+
+
+**-OS에서 race condition이 언제 발생할까?**
+
+- 1. kernel 수행 중 인터럽트 발생 시
+- 2. Process가 system call을 하여 kernel mode로 수행 중인데 context switch 발생 시
+- 3. Multiprocessor에서 shared memory 내의 kernel data
+
+
+
+위의 세 가지 경우를 자세히 알아보자.
+
+**-OS에서의 race condition (1)**
+
+: kernel 수행 중 인터럽트 발생 시 (interrupt handler vs kernel)
+
+(그림)
+
+커널 모드 running (1.)중, 인터럽트가 발생해 인터럽트 처리루틴이 수행됨.
+
+(양쪽 다 커널 코드이므로 kernel address space공유)
+
+결과적으로 count--계산 결과는 반영되지 않음. (count++부분을 저장했다가 interrupt를 처리한 거라서)
+
+
+
+- 어떻게 share할 수 있을까? 
+
+  중요한 계산 중에는 interrupt 들어와도 처리하지 않고, 다 끝나고 처리.
+
+
+
+**-OS에서의 race condition (2)**
+
+: Process가 system call을 하여 kernel mode로 수행 중인데 context switch 발생 시
+
+(**커널에서 코드 수행 중인데 CPU를 preempt 당한다면?**)
+
+
+
+(그림)
+
+- 두 프로세스의 주소공간 간에는 data sharing이 없다.
+- 그러나 system call하는 동안에는 커널 주소공간의 data를 access하게 됨(share)
+- 이 작업 중간에 CPU를 preempt 해가면 race condition 발생
+
+
+
+**-if you preempt CPU while in kernel mode**
+
+(그림)
+
+(1) 프로세스 A가 실행 중이다가 system call
+
+(2) 커널 모드에서 count++ 수행하다가, 할당시간 만료로 CPU를 뺏김
+
+(3) 프로세스 B가 커널 모드에서 count++ 수행 중, 시간 만료로 CPU 뺏김
+
+(4) 프로세스 A가 CPU를 되돌려 받아, 아까 작업하던 count++ 진행
+
+결과적으로 프로세스B의 count++는 반영되지 않음! (문맥이 프로세스A걸 저장하고 있기 때문에)
+
+
+
+- 해결책)
+
+  : **커널 모드에서 수행 중일 때는 할당 시간이 끝나도, CPU를 preempt하지 않음**.
+
+  커널 모드에서 사용자 모드로 돌아갈 때 preempt.
+
+
+
+**-OS에서의 race condition (3)**
+
+: Multiprocessor에서 shared memory 내의 kernel data (작업 주체인 CPU가 여럿)
+
+(그림)
+
+어떤 CPU가 마지막으로 count를 store했느냐에 따라 결과가 달라짐.
+
+multiprocessor의 경우, interrupt enable / disable로 해결되지 않음.
+
+- 방법1) 한 번에 하나의 CPU만이 커널에 들어갈 수 있도록 하고, 하나의 커널을 lock으로 막고, 커널을 빠져나올 때 unlock. (**커널 전체를 lock**하기 때문에 비효율적)
+- 방법2) 커널 내부에 있는 **각 공유 데이터**에 접근할 때마다 그 데이터에 대한 lock/unlock
+
+
+
+**-The Critical-Section 문제**
+
+: n개의 프로세스가 공유 데이터를 동시에 사용하길 원하는 경우, 각 프로세스의 code segment에는 공유 데이터를 접근하는 코드인 '**critical-section**'(임계구역)이 존재.
+
+
+
+- 과제
+
+  : 하나의 프로세스가 critical-section에 있을 때, 다른 모든 프로세스는 critical-section에 들어갈 수 없어야 함.
+
+  (그림)
+
+
+
+**-Initial Attempts to Solve Problem**
+
+- 두 개의 프로세스가 있다고 가정 (P0, P1)
+
+- 프로세스들의 일반적인 구조
+
+  ```c
+  do {
+  	entry section		// 공유 데이터에 접근하기 이전에 lock을 건다
+  	critical section	// 공유 데이터를 접근하는 코드
+  	exit section		// 끝나면 unlock(다른 프로세스가 critical-section에 들어갈 수 있게)
+  	remainder section
+  } while(1);
+  ```
+
+- 프로세스들은 수행의 동기화를 위해 몇몇 변수를 공유할 수 있다. (synchronization variable)
+
+
+
+**-프로그램적 해결법의 충족 조건**
+
+: Critical-section을 해결하기 위해서 만족해야 하는 조건은
+
+- **Mutual Exclusion** (상호배제)
+
+  : 프로세스가 critical section 부분을 수행 중이면, 다른 모든 프로세스들은 그들의 critical section에 들어가면 안 됨. (배타적으로 접근해야 함)
+
+- **Progress** (진행)
+
+  : 아무도 critical section에 있지 않은 상태에서 critical section에 들어가고자 하는 프로세스가 있으면, critical section에 들어가게 해줘야 함.
+
+- **Bounded Waiting** (유한대기)
+
+  : 프로세스가 critical section에 들어가려고 요청한 후부터, 그 요청이 허용될 때까지 다른 프로세스들이 critical section에 들어가는 횟수에 한계가 있어야 함. (프로세스가 3개일 때, 2개만 왔다갔다하고, 1개가 왕따 당할 때)
+
+가정) 모든 프로세스의 수행 속도는 > 0, 프로세스들 간의 상대적 수행 속도는 가정X.
+
+
+
+**-Algorithm 1**
+
+- synchronization variable (프로세스 P0 입장에서)
+
+  ```c
+  // int turn;
+  // initially turn = 0;
+  ```
+
+  프로세스 P(i)는 **turn이 i(자기 차례)**일 때, 자신의 critical section에 들어갈 수 있다.
+
+- Process P0 
+
+  ```c
+  do {
+  	while(turn != 0);	// 내 turn이 아니면 while문 돌며 대기
+  	critical section	// turn이 0일 때 수행
+  	turn = 1;			// 다 끝나면 turn을 바꿔줌
+  	remainder section
+  } while(1);
+  ```
+
+- Process P1
+
+  ```c
+  do {
+      while(turn != 1)
+      critical section
+      turn = 0
+      remainder section
+  } while(1);
+  ```
+
+=> mutual exclusion은 만족, 하지만 progress는 만족하지 못한다.
+
+즉, **과잉양보 현상**이 발생한다.
+
+
+
+*과잉양보
+
+: 반드시 한 번씩 교대로 들어가야만 함 (swap-turn). 그가 turn 값을 내 값으로 바꿔 줘야만 내가 들어갈 수 있음. 특정 프로세스가 더 빈번히 critical section에 들어가야 한다면?
+
+
+
+**-Algorithm 2**
+
+- synchronization variables
+
+  - **boolean flag[2]**; (flag : CS에 들어갈 의견 표시)
+
+    초기에 **flag[모두] = false**;   (아무도 CS에 없다)
+
+  - Pi 가 CS에 들어가고 싶을 때 (**flag[i] == true**)
+
+  
+
+- Process Pi
+
+```c
+do {
+    flag[i] == true;	// 나 들어가려고 해
+    while (flag[j]);	// 다른 사람 있으면 기다릴게
+    critical section	// 다른 사람 없을 때 수행..
+    flag[i] = false;	// 나 이제 나왔어. 깃발 내릴게
+    remainder section
+} while(1);
+```
+
+=> mutual exclusion은 만족하지만 progress 요구를 충족하지 못한다. 한 명이 깃발을 들고 CPU를 뺏긴 뒤, 다른 한 명이 깃발 들 경우, 둘 다 2행까지 수행 후, 끊임없이 양보 ㅋㅋ
+
+
+
+**-Algorithm 3**
+
+- 알고리즘 1과 2를 합침
+- Process P(i)
+
+```c
+do {
+    flag[i] = true;		// 나 들어가고 싶어..
+    turn = j;			// 상대방의 차례로 세팅
+    while (flag[j] && turn == j); // 상대방이 깃발도 들면 난 기다릴게..
+    critical section
+    flag[i] = false;	// 나 나왔어! 깃발 내릴게
+    remainder section
+} while(1);
+```
+
+=> 3가지 조건을 모두 충족한다. 하지만 **Busy Waiting(=spin lock)** 발생. (상대가 turn을 바꿔주지 않는 이상, 계속 CPU와 메모리를 쓰면서 wait. 비효율적)
+
+
+
+**-Synchronization Hardware**
+
+원래는 데이터를 읽고 쓰는 것을 하나의 instruction으로 할 수 없어서 생긴 문제인데, 이게 하나의 instruction으로 해결되면 간단히 lock걸고 해제할 수 있다.
+
+즉, 하드웨어적으로 하나의 (Test & modify를 atomic하게 수행할 수 있도록 지원하는) instruction만 주어지면 critical section문제는 쉽게 해결된다!
+
+**Test_and_set(a)** 이라는 고유 instruction이 제공된다.
+
+(그림)
+
+a라는 데이터를 읽어와서 값을 1로 바꿔준다. (즉, 읽고 쓰기를 동시에!)
+
+
+
+- Mutual Exclusion with Test & Set
+
+  - Sychronization variable:
+
+     	boolean lock = false;
+
+```c
+// Process P(i)
+
+do {
+    while (Test_and_Set(lock)); // lock 걸려있는지 체크하고, 아무도 없으면 내가 들어가기 전 lock을 건다 (true로)
+    critical section
+    lock = false;
+    remainder section	
+}		
+```
+
+
+
+**-Semaphores**
+
+: lock/unlock 기능, **공유 자원을 획득하게 해줌**.
+
+- 앞의 방식들을 **추상화**시킴
+
+- **Semaphore S** (변수- **자원의 개수**)
+
+  - integer variable (정수값)
+  - 아래의 두 가지 atomic 연산에 의해서만 접근 가능
+    - **P(S) , V(S)**
+
+  ```c
+  // P(S) (공유 데이터 semaphore S를 획득하는 과정)
+  while (S<=0) do no-op; // 자원이 없다면 wait
+  S--;		// 음수일 때는 busy-wait 문제 발생
+  
+  // V(S) (다 쓰고 반납하는 과정)
+  S++;
+  ```
+
+  
+
+**-Critical Section of n Process**
+
+(semaphore가 지원 된다면, 프로그래머는 P&V 연산만 넣으면 된다.)
+
+- synchronization variable
+
+  ​	semaphore mutex; (초기값 1 : 1개가 CS에 들어갈 수 있다)
+
+- Process P(i)
+
+  ```c
+  do {
+      P(mutex);
+      critical section
+      V(mutex);
+      remainder section
+  } while(1);
+  ```
+
+=> busy-wait는 여전히 존재, 효율적이지 않다.
+
+Block & Wack up 방식의 구현 (= sleep lock)으로 해결 가능. 
+
+자원이 없을 때, block 됐다가, 자원 생기면 깨어남.
+
+
+
+**-Block / Wackup Implementation**
+
+- semaphore를 다음과 같이 정의
+
+  ```c
+  typedef struct
+  {
+      int value;		// semaphore
+      struct process *L;  // 자원을 얻기 위해 기다리는 큐
+  } semaphore;
+  ```
+
+- block과 wakeup을 다음과 같이 가정
+
+  - block : 커널은 block을 호출한 프로세스를 suspend시킴.
+
+     			이 프로세스의 PCB를 semaphore에 대한 wait 큐에 넣음.
+
+  - wakeup(P) : block된 프로세스 P를 wakeup 시킴.
+
+    ​					이 프로세스의 PCB를 ready큐로 옮김.
+
+  (그림)
+
+  semaphore를 기다리면서, 잠들어 있는 PCB를 연결.
+
+  
+
+**- Implementation : block/wakeup version of P() & V()**
+
+: semaphore 연산에 block/wakeup 작업이 들어가야 함.
+
+- P(S)
+
+  ```c
+  S.value--;			// 들어갈 준비
+  if (S.value < 0)	// 음수면 못 들어가고 block상태
+  {
+      add this process to S.L;
+      block();
+  }
+  ```
+
+  
+
+- V(S)
+
+  ```c
+  S.value++;			// 자원을 내놓았는데도
+  if (S.value <= 0)	// 자원이 0 이하라는 것은 잠들어있는 놈들이 존재
+  {
+      remove a process P from S.L;
+      wakeup(P);
+  }
+  ```
+
+  => 여기서 음수라는 것은 누군가 자원을 쓰기 위해 기다리고 있다는 의미.
+
+  
+
+**-which is better?**
+
+: semaphore를 구현하는 방식에 있어서
+
+- Busy-wait v.s. Block/wakeup (보통은 Block/wakeup이 효율적!)
+- Block/wakeup overhead v.s. Critical section 길이
+  - 상태를 바꿔줄 때도 오버헤드가 생김
+    - critical section 길이가 길면, Block/wakeup이 적당
+    - critical section 길이가 매우 짧으면, 이 때의 오버헤드가  busy-wait 오버헤드보다 더 커질 수 있음.
+
+
+
+**-Two types of Semaphores**
+
+- Counting semaphore
+
+  - 도메인이 0 이상인 임의의 정수값
+  - 주로 resource counting에 사용
+
+- Binary semaphore (=mutex)
+
+  - 0 또는 1 값만 가질 수 있는 semaphore
+  - 주로 mutual exclusion (lock/unlock)에 사용
+
+  
+
+**-Deadlock and Starvation**
+
+: semaphore를 쓸 때, 문제점이 있다.
+
+- **Deadlock **
+
+  : 둘 이상의 프로세스가 **서로 상대방에 의해 충족될 수 있는 event**를 무한히 기다리는 현상
+
+- ex of deadlock) S와 Q가 1로 초기화된 semaphore라 하자.
+
+  (그림)
+
+  => P0과 P1는 S와 Q를 동시에 가질 수 없다.
+
+  자원 갖는 순서를 (S->Q)로 지정하면 해결 가능.
+
+- **Starvation (indefinite blocking) **
+
+  : 프로세스가 suspend된 이유에 해당하는 semaphore 큐에서 빠져나갈 수 없는 현상.
