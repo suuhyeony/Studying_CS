@@ -1513,8 +1513,9 @@ a라는 데이터를 읽어와서 값을 1로 바꿔준다. (즉, 읽고 쓰기�
 
 - Mutual Exclusion with Test & Set
 
-  - Sychronization variable:
-     	boolean lock = false;
+  - Sychronization variable: boolean lock = false;
+
+<br />
 
 ```c
 // Process P(i)
@@ -1668,7 +1669,7 @@ Block & Wack up 방식의 구현 (= sleep lock)으로 해결 가능.
 
 : semaphore를 쓸 때, 문제점이 있다.
 
-- **Deadlock **
+- **Deadlock**
 
   : 둘 이상의 프로세스가 **서로 상대방에 의해 충족될 수 있는 event**를 무한히 기다리는 현상
 
@@ -1680,6 +1681,6 @@ Block & Wack up 방식의 구현 (= sleep lock)으로 해결 가능.
 
   자원 갖는 순서를 (S->Q)로 지정하면 해결 가능.
 
-- **Starvation (indefinite blocking) **
+- **Starvation (indefinite blocking)**
 
   : 프로세스가 suspend된 이유에 해당하는 semaphore 큐에서 빠져나갈 수 없는 현상.
