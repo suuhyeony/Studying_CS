@@ -1218,7 +1218,7 @@ Priority = 다음 CPU burst time을 예측한 것
 
 ## Ch6. 프로세스 동기화
 
-**-Process Synchronization**
+**-Process Synchronization** (=Concurrency Control, 병행 제어)
 
 : 하나의 자원을 한 순간에 하나의 프로세스만이 이용하도록 제어하는 것.
 
@@ -1681,7 +1681,7 @@ Block & Wack up 방식의 구현 (= sleep lock)으로 해결 가능.
 
   : 프로세스가 suspend된 이유에 해당하는 semaphore 큐에서 빠져나갈 수 없는 현상.
 
-
+<br />
 
 ### Classical Problems of Synchronization
 
@@ -1712,7 +1712,7 @@ Block & Wack up 방식의 구현 (= sleep lock)으로 해결 가능.
   - Lock을 푼다
   - Empty buffer 하나 증가 (pointer)
 
-
+<br />
 
 - Shared data : buffer 자체 및 buffer 조작변수 (empty/full buffer의 시작위치)
 
@@ -1753,7 +1753,7 @@ do {
 
 둘이 상반되는 과정.
 
-
+<br />
 
 **-2) Readers-Writers Problem**
 
@@ -1807,7 +1807,7 @@ if (readcount == 0) V(db); // 내가 마지막 reader라면 DB lock 풀기
 V(mutex);				// readcount에 대한 lock 풀기
 ```
 
-
+<br />
 
 - **starvation** 발생 가능
 
@@ -1815,7 +1815,7 @@ V(mutex);				// readcount에 대한 lock 풀기
 
   => 개선) 어느 정도의 reader가 빠져 나가면 writer에게 차례 줌 (신호등 생기면 언젠가는 건널 수 있다!)
 
-
+<br />
 
 **-3) Dining-philosophers Problem** (식사하는 철학자 문제)
 
@@ -1900,11 +1900,11 @@ void putdown(int i) {
 
 ex) V,P연산을 실수로 바꿔 쓰면 상호배제 깨짐. 실수로 같은 연산 쓰면 Deadlock.
 
-
+<br />
 
 **-Monitor**
 
-: 동시 수행 중인 프로세스 사이에서 abstract data type의 안전 공유를 보장하기 위한 high-level synchronization construct
+: 동시 수행 중인 프로세스 사이에서 abstract data type의 안전 공유를 보장하기 위한 high-level synchronization construct (semaphore에 비해 프로그래머의 부담을 줄여주고, **moitor가 알아서 해줌**)
 
 ```c
 monitor monitor-name
@@ -1921,19 +1921,27 @@ monitor monitor-name
 }
 ```
 
-monitor라고 정의된 내부의 프로시저를 통해서만 공유데이터에 접근 가능.
+**monitor라고 정의된 내부의 프로시저를 통해서만 공유 데이터에 접근 가능**.
+
+<br />
 
 (그림)
 
+- monitor내부에 A, B프로세스(각각 공유 데이터를 접근하는 코드)를 가지고 있다.
+
 - **모니터 내에서는 한 번에 하나의 프로세스만이 활동 가능** (operations)
 
-  => 프로그래머가 동기화 제약 조건을 명시적으로 코딩할 필요가 없음(**lock필요X**)
+  => 프로그래머가 동기화 제약 조건을 명시적으로 코딩할 필요가 없음(**lock을 걸 필요X**)
 
-- 프로세스가 모니터 안에서 기다릴 수 있게 **condition variable(자원 여분 여부)**사용. (condition x, y;) 자원이 있으면 바로 접근, 없으면 기다리게 함.
+  만약, 실행 도중에 CPU를 빼앗겨도, monitor내부에 active한 상태로 남아있게 된다. 따라서, 다른 프로세스가 monitor내의 코드를 실행하지 못하고 밖의 큐에 줄 서서 있게 됨. monitor 내부에 active한 자원 수가 0이 될 때, 밖에서 기다리던 프로세스가 들어옴.
+
+- 프로세스가 모니터 안에서 기다릴 수 있게 **condition variable**(자원 여분 여부/ **어떤 조건을 충족시키지 못해 잠들거나 깨울 때**)사용. 
+
+  (condition x, y;) 자원이 있으면 바로 접근, 없으면 기다리게 함. (**condition variable은 값을 가지는 변수가 아님!**)
 
 - condition variable은 **wait**와 **signal**연산에 의해서만 접근 가능.
 
-  - **x. wait();** - 자원 x 때 기다리는..
+  - **x. wait();** - 자원 x를 원하는 줄에 기다리는..
 
     => x. wait()을 invoke한 프로세스는 다른 프로세스가 x.signal()을 invoke하기 전까지 suspend된다.
 
@@ -1941,10 +1949,12 @@ monitor라고 정의된 내부의 프로시저를 통해서만 공유데이터�
 
     => x.signal()은 정확하게 하나의 suspend된 프로세스를 resume 한다. suspend된 프로세스가 없으면 아무 일도 일어나지 않음.
 
-- monitor bounded-bufffer
+<br />
+
+- 1) monitor bounded-bufffer
 
 ```c
-monitor bounded_buffer {
+monitor내부에 monitor bounded_buffer {
     int buffer[N];			
     // 공유 버퍼가 모니터 안에 정의(굳이 lock을 걸지 않아도 produce나 consume 중 하나만 실행됨)
     condition full, empty;
@@ -1960,6 +1970,47 @@ monitor bounded_buffer {
         full.wait();	// 찬 버퍼가 없으면 줄서서 기다림
         remove an item from buffer and store it to *x
         empty.signal();	// 비운 후, 기다리는 프로세스를 깨워줌
+    }
+}
+```
+
+<br />
+
+- 2) Dining Philosophers (monitor ver.)
+
+```c
+Each Philosopher: {
+    pickup(i);		// enter monitor
+    eat();
+    putdown(i);		// enter monitor
+    think();
+}
+
+monitor dining_philosopher {
+    enum {thinking, hungry, eating} state[5];
+    condition self[5];
+    void pickup(int i) {
+        state[i] = hungry;
+        test(i);
+        if (state[i] != eating)
+            self[i].wait();		 // wait here
+    }
+    
+    void putdown(int i) {
+        state[i] = thinking;
+        test((i+4)%5);		
+        test((i+1)%5);
+    }
+    
+    void test(int i) {
+        if ((state[(i+4)%5] != eating) && (state[i] == hungry) && (state[(i+1)%5] != eating)) {
+            state[i] = eating;
+            self[i].signal();	// wake up P(i)
+        }
+    }
+    void init() {
+        for(int i = 0; i < 5; i++)
+            state[i] = thinking;
     }
 }
 ```
