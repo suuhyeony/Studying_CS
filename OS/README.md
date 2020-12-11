@@ -1232,7 +1232,7 @@ Priority = 다음 CPU burst time을 예측한 것
 
 : 컴퓨터 시스템 안에서 데이터에 어떻게 접근할까?
 
-(그림)
+![데이터의 접근](https://user-images.githubusercontent.com/58247800/101870685-74da6d00-3bc5-11eb-9f9b-fc85a8c79244.PNG)
 
 데이터가 저장되어 있는 위치로부터 데이터를 읽어와서 연산한 뒤, 연산한 결과를 이전에 저장되어있던 그 위치에 다시 저장.
 
@@ -1246,7 +1246,7 @@ Priority = 다음 CPU burst time을 예측한 것
 
 데이터의 최종 연산 결과는 **마지막에 그 데이터를 다룬 프로세스에 따라 달라짐**.
 
-(그림)
+![경쟁상태](https://user-images.githubusercontent.com/58247800/101870700-7f950200-3bc5-11eb-907c-500c2a982830.PNG)
 
 S-box(Memory Address space)를 공유하는 E-box(CPU Process)가 여럿있는 경우 Race condition의 가능성이 있다.
 
@@ -1280,7 +1280,7 @@ S-box(Memory Address space)를 공유하는 E-box(CPU Process)가 여럿있는 �
 
 : kernel 수행 중 인터럽트 발생 시 (interrupt handler vs kernel)
 
-(그림)
+![os에서의 경쟁상태1](https://user-images.githubusercontent.com/58247800/101870737-90de0e80-3bc5-11eb-882b-32cedec26886.PNG)
 
 커널 모드 running (1.)중, 인터럽트가 발생해 인터럽트 처리루틴이 수행됨.
 
@@ -1304,7 +1304,7 @@ S-box(Memory Address space)를 공유하는 E-box(CPU Process)가 여럿있는 �
 
 <br />
 
-(그림)
+![os에서의 경쟁상태2-1](https://user-images.githubusercontent.com/58247800/101870743-93d8ff00-3bc5-11eb-88bb-3d460ddc86b1.PNG)
 
 - 두 프로세스의 주소공간 간에는 data sharing이 없다.
 - 그러나 system call하는 동안에는 커널 주소공간의 data를 access하게 됨(share)
@@ -1314,7 +1314,7 @@ S-box(Memory Address space)를 공유하는 E-box(CPU Process)가 여럿있는 �
 
 **-if you preempt CPU while in kernel mode**
 
-(그림)
+![os에서의 경쟁상태2-2](https://user-images.githubusercontent.com/58247800/101870750-963b5900-3bc5-11eb-9110-32ee7a4e2714.PNG)
 
 (1) 프로세스 A가 실행 중이다가 system call
 
@@ -1340,7 +1340,7 @@ S-box(Memory Address space)를 공유하는 E-box(CPU Process)가 여럿있는 �
 
 : Multiprocessor에서 shared memory 내의 kernel data (작업 주체인 CPU가 여럿)
 
-(그림)
+![os에서의 경쟁상태3](https://user-images.githubusercontent.com/58247800/101870755-99364980-3bc5-11eb-9744-57ad833bf4ea.PNG)
 
 어떤 CPU가 마지막으로 count를 store했느냐에 따라 결과가 달라짐.
 
@@ -1361,7 +1361,7 @@ multiprocessor의 경우, interrupt enable / disable로 해결되지 않음.
 
   : 하나의 프로세스가 critical-section에 있을 때, 다른 모든 프로세스는 critical-section에 들어갈 수 없어야 함.
 
-  (그림)
+![critical-section](https://user-images.githubusercontent.com/58247800/101870717-89b70080-3bc5-11eb-8604-7eeccc33d0c6.PNG)
 
 <br />
 
@@ -1505,7 +1505,7 @@ do {
 
 **Test_and_set(a)** 이라는 고유 instruction이 제공된다.
 
-(그림)
+![test-and-set](https://user-images.githubusercontent.com/58247800/101871075-3f824f00-3bc6-11eb-8ea5-89a4821b9ef3.PNG)
 
 a라는 데이터를 읽어와서 값을 1로 바꿔준다. (즉, 읽고 쓰기를 동시에!)
 
@@ -1597,7 +1597,7 @@ Block & Wack up 방식의 구현 (= sleep lock)으로 해결 가능.
   - block : 커널은 block을 호출한 프로세스를 suspend시킴. 이 프로세스의 PCB를 semaphore에 대한 wait 큐에 넣음.
   - wakeup(P) : block된 프로세스 P를 wakeup 시킴. 이 프로세스의 PCB를 ready큐로 옮김.
 
-  (그림)
+![semaphore_block wakeup](https://user-images.githubusercontent.com/58247800/101870781-a94e2900-3bc5-11eb-9ff3-a4d2e959120b.PNG)
 
   semaphore를 기다리면서, 잠들어 있는 PCB를 연결.
 
@@ -1671,7 +1671,7 @@ Block & Wack up 방식의 구현 (= sleep lock)으로 해결 가능.
 
 - ex of deadlock) S와 Q가 1로 초기화된 semaphore라 하자.
 
-  (그림)
+![deadlock](https://user-images.githubusercontent.com/58247800/101870790-ad7a4680-3bc5-11eb-894b-916300062d26.PNG)
 
   => P0과 P1는 S와 Q를 동시에 가질 수 없다.
 
@@ -1697,7 +1697,7 @@ Block & Wack up 방식의 구현 (= sleep lock)으로 해결 가능.
 
 아래와 같이 공유버퍼에 두 종류의 프로세스가 있다.
 
-(그림)
+![bounded-buffer-problem](https://user-images.githubusercontent.com/58247800/101870799-b0753700-3bc5-11eb-8e64-9cb36ee34dad.PNG)
 
 - **Producer** (buffer에 데이터 넣기)
   - Empty buffer(자원)가 있나? (없으면 기다림)
@@ -1825,7 +1825,7 @@ V(mutex);				// readcount에 대한 lock 풀기
 
   : semaphore chopsticks[5];  (초기값은 모두 1: 혼자서만 젓가락을 잡을 수 있음)
 
-(그림)
+![철학자](https://user-images.githubusercontent.com/58247800/101871065-3a250480-3bc6-11eb-9068-59c7b0ccf115.PNG)
 
 - Philosopher i
 
@@ -1925,7 +1925,7 @@ monitor monitor-name
 
 <br />
 
-(그림)
+![monitor](https://user-images.githubusercontent.com/58247800/101870806-b539eb00-3bc5-11eb-8610-02d4d23033f1.PNG)
 
 - monitor내부에 A, B프로세스(각각 공유 데이터를 접근하는 코드)를 가지고 있다.
 
