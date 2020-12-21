@@ -2015,3 +2015,147 @@ monitor dining_philosopher {
 }
 ```
 
+
+
+## Ch7. Deadlock
+
+**-Deadlock (교착상태)**
+
+: 일련의 프로세스들이 **서로가 가진 자원을 기다리며 block된 상태**
+
+각자 자원을 가지고 있으면서, 상대방의 자원을 더 요청하는.. 더 이상 진행이 되지 않는 상황. (어느 누구도 양보하지 않으면 진행이 안됨.)
+
+
+
+**-Resource** (자원)
+
+- 하드웨어, 소프트웨어 등을 포함하는 개념 (ex. I/O device, CPU cycle, memory space, semaphore 등)
+- 프로세스가 자원을 사용하는 절차 (4단계)
+  - Request(요청), Allocate(획득), Use(사용), Realease(반납)
+
+**-Deadlock Example**
+
+1) 하드웨어 - I/O device의 경우, 시스템에 2개의 tape drive가 있다.
+
+프로세스 p(1)과 p(2) 각각이 하나의 tape drive를 보유한 채, 다른 하나를 기다리고 있다.
+
+2) 소프트웨어 - binary semaphore A and B
+
+p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가지려하는데, A는 p(0)이 갖고 있음.. CPU가 어느 쪽에 가더라도 진행이 안 됨.
+
+
+
+**-Deadlock 발생의 4가지 조건**
+
+: deadlock은 왜 발생하는가?
+
+- **Mutual exclusion (상호배제)** : 매 순간 하나의 프로세스만이 자원을 사용할 수 있음.
+- **No preemption (비선점)** : 프로세스는 자원을 스스로 내어놓을 뿐, 강제로 빼앗기지 않음.
+- **Hold and wait (보유대기)** : 자원을 가진 프로세스가 다른 자원을 기다릴 때, 보유 자원을 놓지 않고 계속 가지고 있음.
+- **circular wait (순환대기)** : 자원을 기다리는 프로세스간에 사이클이 형성되어야 함. p(0)은 p(1)이 가진 자원을 기다림. p(1)은 p(2)가 가진 자원을 기다림. p(n)은 p(0)이 가진 자원을 기다림.
+
+
+
+**- Resource-Allocation Graph (자원할당 그래프)**
+
+: deadlock이 발생했는지 알아보기 위해 사용.
+
+(그림)
+
+- vertex
+
+: 동그라미는 프로세스, 네모는 자원. 네모 안의 점은 자원의 수.
+
+- edge
+
+: 자원 -> 프로세스 (이 프로세스가 해당 자원을 가지고 있다.)
+
+프로세스 -> 자원 (이 프로세스가 해당 자원을 요청. 아직 획득하진 못함)
+
+(그림)
+
+- 그래프에 cycle이 없으면 deadlock이 아니다
+- 그래프에 cycle이 있으면
+  - 자원당 instance(개수)가 하나 밖에 없으면, deadlock
+  - 자원당 instance가 여러개면, deadlock일 수도 아닐 수도
+
+두 그림 모두 cycle이 존재, 
+
+왼쪽은 R(2) 자원을 p(1),p(2)가 갖고 있으면서, p(3)가 요청하는 상황이기에 deadlock.
+
+오른쪽은 p(4)가 R(2)를 반납하거나, p(2)가 R(1)을 반납할 수 있기에 deadlock 아님.
+
+
+
+**-Deadlock의 처리 방법**
+
+- 미연에 방지하는 방법
+
+  - Deadlock Prevention : 자원 할당 시, Deadlock의 4가지 필요 조건 중 어느 하나가 만족되지 않도록 하는 것. 
+
+  - Deadlock Avoidance : 자원 요청에 대한 부가적인 정보를 이용해서, deadlock의 가능성이 없는 경우에만 자원을 할당.
+
+    시스템 state가 원래 state로 돌아올 수 있는 경우에만 자원 할당.
+
+- deadlock이 생기게 놔둠
+
+  - Deadlock Detection and recovery : deadlock 발생은 허용하되, 그에 대한 detection 루틴을 두어 deadlock 발견 시 recover
+
+  - **Deadlock Ignorance** (현대 OS 에서 채택: deadlock이 자주 발생하지 않기 때문에, 미연에 방지하는데 드는 overhead가 더 크다.)
+
+    : deadlock을 시스템이 책임지지 않음. UNIX를 포함한 대부분의 OS가 채택.
+
+
+
+**- Deadlock Prevention**
+
+- Mutual Exclusion : 막을 수 없음. 공유해서는 안되는 자원의 경우, 반드시 성립해야 함.
+- Hold and Wait : 프로세스가 자원을 요청할 때는 다른 어떤 자원도 가지고 있지 않아야 한다.
+  - 방법 1) 프로세스 시작 시, 모든 필요한 자원을 할당받게 하는 방법. (중간에 추가로 필요한 자원이 없을 것. 비효율적..)
+  - 방법 2) 자원이 필요할 경우, 보유 자원을 모두 놓고 다시 요청. (자진 반납)
+- No Preemption
+  - 프로세스가 어떤 자원을 기다려야 하는 경우, 이미 보유한 자원이 선점됨
+  - 모든 필요한 자원을 얻을 수 있을 때, 그 프로세스는 다시 시작됨
+  - state를 쉽게 save하고, restore할 수 있는 자원에서 주로 사용(CPU, 메모리)
+- Circular Wait
+  - 자원들이 꼬리에 꼬리를 물 때 사용 (cycle이 생기지 않도록)
+  - 모든 자원 유형에 할당 순서를 정하여, 정해진 순서대로만 자원 할당
+  - 예를 들어, 순서가 3인 자원R(i)를 보유 중인 프로세스가 순서가 1인 자원 R(j)를 할당받기 위해서는, 우선 R(i)를 release해야 함!
+
+=> 문제점 : utilization(자원 이용률) 저하, throughput(전체 시스템 성능) 감소, starvation 문제
+
+
+
+**- Deadlock Avoidance**
+
+: 자원 요청에 대한 부가정보를 이용해서, 자원 할당이 deadlock으로부터 안전한지를 동적으로 조사, 안전한 경우에만 할당. (deadlock이 발생할 수 있는 요청은 거부.)
+
+가장 단순하고 일반적인 모델은 프로세스들이 필요로 하는 각 자원별 최대 사용량을 미리 선언하도록 하는 방법.
+
+시스템이 unsafe state에 들어가지 않는 것을 보장
+
+2가지 경우의 avoidance 알고리즘
+
+- 자원당 instance가 한 개일 때 => **resource allocation graph 알고리즘** 사용
+
+  (그림)
+
+  - claim edge (p(i) -> R(j))
+    - 프로세스 p(i)가 자원 R(j)를 미래에 요청할 수 있음 (점선)
+    - 프로세스가 해당 자원 요청 시, request edge(실선)로 바뀜
+    - R(j)가 release되면, assignment edge는 다시 claim edge로 바뀜
+  - requese edge의 assignment edge 변경 시 (점선 포함) cycle이 생기지 않는 경우에만 요청 자원을 할당.
+  - cycle 생성 여부 조사시, 프로세스의 수가 n일 때, O(n^2) 시간이 걸림.
+
+  
+
+- 자원당 instace가 여러 개일 때 => **Banker's 알고리즘** 사용
+
+  **example of Banker's Algorithm**
+
+  (그림)
+
+- safe state : 시스템 내의 프로세스들에 대한 safe sequence가 존재하는 상태
+
+- safe sequence
+
