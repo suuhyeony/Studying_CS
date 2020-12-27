@@ -2091,23 +2091,23 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 
 - 미연에 방지하는 방법
 
-  - Deadlock Prevention : 자원 할당 시, Deadlock의 4가지 필요 조건 중 어느 하나가 만족되지 않도록 하는 것. 
+  - 1) Deadlock Prevention : 자원 할당 시, Deadlock의 4가지 필요 조건 중 어느 하나가 만족되지 않도록 하는 것. 
 
-  - Deadlock Avoidance : 자원 요청에 대한 부가적인 정보를 이용해서, deadlock의 가능성이 없는 경우에만 자원을 할당.
+  - 2) Deadlock Avoidance : 자원 요청에 대한 부가적인 정보를 이용해서, deadlock의 가능성이 없는 경우에만 자원을 할당.
 
     시스템 state가 원래 state로 돌아올 수 있는 경우에만 자원 할당.
 
 - deadlock이 생기게 놔둠
 
-  - Deadlock Detection and recovery : deadlock 발생은 허용하되, 그에 대한 detection 루틴을 두어 deadlock 발견 시 recover
+  - 3) Deadlock Detection and recovery : deadlock 발생은 허용하되, 그에 대한 detection 루틴을 두어 deadlock 발견 시 recover
 
-  - **Deadlock Ignorance** (현대 OS 에서 채택: deadlock이 자주 발생하지 않기 때문에, 미연에 방지하는데 드는 overhead가 더 크다.)
+  - 4) **Deadlock Ignorance** (현대 OS 에서 채택: deadlock이 자주 발생하지 않기 때문에, 미연에 방지하는데 드는 overhead가 더 크다.)
 
     : deadlock을 시스템이 책임지지 않음. UNIX를 포함한 대부분의 OS가 채택.
 
 
 
-**- Deadlock Prevention**
+**- 1) Deadlock Prevention**
 
 - Mutual Exclusion : 막을 수 없음. 공유해서는 안되는 자원의 경우, 반드시 성립해야 함.
 - Hold and Wait : 프로세스가 자원을 요청할 때는 다른 어떤 자원도 가지고 있지 않아야 한다.
@@ -2126,17 +2126,35 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 
 
 
-**- Deadlock Avoidance**
+**- 2) Deadlock Avoidance**
 
 : 자원 요청에 대한 부가정보를 이용해서, 자원 할당이 deadlock으로부터 안전한지를 동적으로 조사, 안전한 경우에만 할당. (deadlock이 발생할 수 있는 요청은 거부.)
 
 가장 단순하고 일반적인 모델은 프로세스들이 필요로 하는 각 자원별 최대 사용량을 미리 선언하도록 하는 방법.
 
-시스템이 unsafe state에 들어가지 않는 것을 보장
+- **safe state** : 시스템 내의 프로세스들에 대한 **safe sequence**가 존재하는 상태
+- **safe sequence **
+  - 프로세스의 sequence <P(1),P(2), ... , P(n)>이 safe하려면 P(i) (1 <= i <= n)의 자원요청이 **"가용자원 + 모든 P(j) (j < i)의 보유자원"**에 의해 충족되어야 함.
+  - 조건을 만족하면 다음 방법으로 모든 프로세스의 수행을 보장
+    - P(i)의 자원요청이 즉시 충족될 수 없으면, 모든 P(j) (j < i)가 종료될 때까지 기다린다
+    - P(i-1)이 종료되면 P(i)의 자원요청을 만족시켜 수행한다
 
-2가지 경우의 avoidance 알고리즘
 
-- 자원당 instance가 한 개일 때 => **resource allocation graph 알고리즘** 사용
+
+- 시스템이 safe state에 있으면 => no deadlock
+- 시스템이 unsafe state에 있으면 => possibility of deadlock
+
+(그림)
+
+- deadlock avoidance 
+  - 시스템이 unsafe state에 들어가지 않는 것을 보장
+  - 2가지 경우의 avoidance 알고리즘
+    - 1) 자원당 instance가 한 개일 때 => resource allocation graph 알고리즘 사용
+    - 2) 자원당 instacne가 여러 개일 때 => banker's 알고리즘 사용
+
+
+
+- **1) 자원당 instance가 한 개일 때** => **resource allocation graph 알고리즘** 사용
 
   (그림)
 
@@ -2149,13 +2167,83 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 
   
 
-- 자원당 instace가 여러 개일 때 => **Banker's 알고리즘** 사용
+- **2) 자원당 instace가 여러 개일 때** => **Banker's 알고리즘** 사용
 
   **example of Banker's Algorithm**
 
+  : **Need(각 프로세스의 자원 요청)를 받아들일지 아닐지를 결정!!** 항상 최악의 상황을 가정하며, 굉장히 보수적임. **프로세스들이 본인의 최대 요청을 할 것이라 가정하고, 가용 자원(Available)에서 줄 수 있는지를 본다.** 가용자원으로 충족되면 처리되고, 추가 요청이 가용자원으로 충족되지 않을 시에는 처리되지 않음.
+
   (그림)
 
-- safe state : 시스템 내의 프로세스들에 대한 safe sequence가 존재하는 상태
+  - 각 프로세스는 최대로 사용하는 자원의 수를 미리 알 수 있음(Max), 하지만 어느 시점에 필요할지는 알 수 없다.
+  - 평생에 요청할 수 있는 최대 자원의 수는 Need (Max - Allocation)
+  - sequence <P(1)-P(3)-P(4)-P(2)-P(0)>가 존재하므로 시스템은 safe state.
+  - deadlock이 생기지 않지만, 자원이 있는데도 주지 않으므로 비효율적.
 
-- safe sequence
+  
 
+  (그림)
+
+
+
+**- 3) Deadlock Detection and Recovery**
+
+- deadlock detection
+  - resource type당 single instance인 경우
+    - 자원할당 그래프에서의 cycle이 곧 deadlock을 의미
+  - resource type당 multiple instance인 경우
+    - banker's 알고리즘과 유사한 방법 활용
+
+
+
+- wait-for graph 알고리즘
+
+  (그림)
+
+  - resource type당 single instance인 경우
+  - wait-for graph
+    - 자원할당 그래프의 변형
+    - 프로세스만으로 node 구성
+    - P(j)가 가지고 있는 자원을 P(k)가 기다리는 경우 P(k) -> P(j)
+  - 알고리즘
+    - wait-for graph에 사이클이 존재하는지를 주기적으로 조사
+    - cycle을 찾는데 걸리는 시간 : O(n^2) 
+
+- resource type당 multiple instance인 경우
+
+  : 보수적이지 않고, 낙관적으로 생각함 (자원을 반납할거라 생각)
+
+  (그림)
+
+=> No deadlock : sequence <P(0)-P(2)-P(3)-P(1)-P(4)> will work!
+
+먼저 가용자원(Available)으로 커버할 수 있는지 본다.
+
+다음으로 요청자원이 없는 프로세스를 보고, 내어놓을 수 있는 자원을 살펴본다.
+
+그 자원을 가용자원으로 합쳐놓고, 요청자원을 만족하는 프로세스를 진행시킨다.
+
+문제 없이 끝까지 갈 수 있다면, No deadlock!!
+
+
+
+만약, deadlock이 발견되면 recovery를 해야한다.
+
+- **Recovery**
+  - **Process termination** : deadlock에 연루된 프로세스들을 사살
+    - 1) 연루된 모든 프로세스들을 사살
+    - 2) 하나씩 죽이면서 deadlock이 해결되는지 살펴봄 (deadlock이 없어질 때까지 반복)
+  - Resource Preemption : deadlock에 연루된 프로세스들로부터 자원을 뺏음
+    - 비용을 최소화할 victim 선정 (자원을 빼앗을 희생양 선정)
+    - safe state로 rollback하여 프로세스를 재시작
+    - starvation 문제 (p1한테서 a자원을 뺏었는데 다른 p가 a자원을 요청하기도 전에 p1이 a자원을 또 요청..)
+      - 동일한 프로세스가 계속해서 victim으로 선정되는 경우
+      - cost factor에 rollback 횟수도 같이 고려 (꼭 비용만 최소화하는게 아니라~)
+
+**- 4) Deadlock Ignorance**
+
+: deadlock이 일어나지 않는다고 생각하고, 아무런 조치도 취하지 않음
+
+- deadlock이 매우 드물게 발생하므로, deadlock에 대한 조치 자체가 더 큰 오버헤드일 수 있다.
+- 만약 시스템에 deadlock이 발생한 경우, 시스템이 비정상적으로 작동하는 것을 사람이 느낀 후, 직접 프로세스를 kill하는 등의 방법으로 대처
+- UNIX, Windows 등 대부분의 범용 OS가 채택
