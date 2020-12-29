@@ -2015,7 +2015,7 @@ monitor dining_philosopher {
 }
 ```
 
-
+<br/>
 
 ## Ch7. Deadlock
 
@@ -2025,7 +2025,7 @@ monitor dining_philosopher {
 
 각자 자원을 가지고 있으면서, 상대방의 자원을 더 요청하는.. 더 이상 진행이 되지 않는 상황. (어느 누구도 양보하지 않으면 진행이 안됨.)
 
-
+<br/>
 
 **-Resource** (자원)
 
@@ -2043,7 +2043,7 @@ monitor dining_philosopher {
 
 p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가지려하는데, A는 p(0)이 갖고 있음.. CPU가 어느 쪽에 가더라도 진행이 안 됨.
 
-
+<br/>
 
 **-Deadlock 발생의 4가지 조건**
 
@@ -2054,7 +2054,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 - **Hold and wait (보유대기)** : 자원을 가진 프로세스가 다른 자원을 기다릴 때, 보유 자원을 놓지 않고 계속 가지고 있음.
 - **circular wait (순환대기)** : 자원을 기다리는 프로세스간에 사이클이 형성되어야 함. p(0)은 p(1)이 가진 자원을 기다림. p(1)은 p(2)가 가진 자원을 기다림. p(n)은 p(0)이 가진 자원을 기다림.
 
-
+<br/>
 
 **- Resource-Allocation Graph (자원할당 그래프)**
 
@@ -2072,6 +2072,8 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 
 프로세스 -> 자원 (이 프로세스가 해당 자원을 요청. 아직 획득하진 못함)
 
+<br/>
+
 ![자원할당 그래프](https://user-images.githubusercontent.com/58247800/103292570-70b9a680-4a31-11eb-88b1-4e8ff0a49150.PNG)
 ![자원할당 그래프2](https://user-images.githubusercontent.com/58247800/103292586-7b743b80-4a31-11eb-9c03-d495d66cb2a6.PNG)
 
@@ -2086,7 +2088,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 
 오른쪽은 p(4)가 R(2)를 반납하거나, p(2)가 R(1)을 반납할 수 있기에 deadlock 아님.
 
-
+<br/>
 
 **-Deadlock의 처리 방법**
 
@@ -2106,7 +2108,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 
     : deadlock을 시스템이 책임지지 않음. UNIX를 포함한 대부분의 OS가 채택.
 
-
+<br/>
 
 **- 1) Deadlock Prevention**
 
@@ -2125,7 +2127,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 
 => 문제점 : utilization(자원 이용률) 저하, throughput(전체 시스템 성능) 감소, starvation 문제
 
-
+<br/>
 
 **- 2) Deadlock Avoidance**
 
@@ -2140,7 +2142,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
     - P(i)의 자원요청이 즉시 충족될 수 없으면, 모든 P(j) (j < i)가 종료될 때까지 기다린다
     - P(i-1)이 종료되면 P(i)의 자원요청을 만족시켜 수행한다
 
-
+<br/>
 
 - 시스템이 safe state에 있으면 => no deadlock
 - 시스템이 unsafe state에 있으면 => possibility of deadlock
@@ -2153,7 +2155,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
     - 1) 자원당 instance가 한 개일 때 => resource allocation graph 알고리즘 사용
     - 2) 자원당 instacne가 여러 개일 때 => banker's 알고리즘 사용
 
-
+<br/>
 
 - **1) 자원당 instance가 한 개일 때** => **resource allocation graph 알고리즘** 사용
 
@@ -2166,7 +2168,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
   - requese edge의 assignment edge 변경 시 (점선 포함) cycle이 생기지 않는 경우에만 요청 자원을 할당.
   - cycle 생성 여부 조사시, 프로세스의 수가 n일 때, O(n^2) 시간이 걸림.
 
-  
+  <br/>
 
 - **2) 자원당 instace가 여러 개일 때** => **Banker's 알고리즘** 사용
 
@@ -2181,11 +2183,11 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
   - sequence <P(1)-P(3)-P(4)-P(2)-P(0)>가 존재하므로 시스템은 safe state.
   - deadlock이 생기지 않지만, 자원이 있는데도 주지 않으므로 비효율적.
 
-  
+  <br/>
 
 ![p1 request](https://user-images.githubusercontent.com/58247800/103292773-d443d400-4a31-11eb-99a1-43a297fbe1e5.PNG)
 
-
+<br/>
 
 **- 3) Deadlock Detection and Recovery**
 
@@ -2195,7 +2197,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
   - resource type당 multiple instance인 경우
     - banker's 알고리즘과 유사한 방법 활용
 
-
+<br/>
 
 - wait-for graph 알고리즘
 
@@ -2226,7 +2228,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 
 문제 없이 끝까지 갈 수 있다면, No deadlock!!
 
-
+<br/>
 
 만약, deadlock이 발견되면 recovery를 해야한다.
 
@@ -2240,6 +2242,8 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
     - starvation 문제 (p1한테서 a자원을 뺏었는데 다른 p가 a자원을 요청하기도 전에 p1이 a자원을 또 요청..)
       - 동일한 프로세스가 계속해서 victim으로 선정되는 경우
       - cost factor에 rollback 횟수도 같이 고려 (꼭 비용만 최소화하는게 아니라~)
+      
+<br/>
 
 **- 4) Deadlock Ignorance**
 
