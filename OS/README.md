@@ -2183,7 +2183,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 
   
 
-  (그림)
+![p1 request](https://user-images.githubusercontent.com/58247800/103292773-d443d400-4a31-11eb-99a1-43a297fbe1e5.PNG)
 
 
 
@@ -2199,7 +2199,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 
 - wait-for graph 알고리즘
 
-  (그림)
+![waitforgraph](https://user-images.githubusercontent.com/58247800/103292827-f6d5ed00-4a31-11eb-9b6f-a12aeedad058.PNG)
 
   - resource type당 single instance인 경우
   - wait-for graph
@@ -2214,7 +2214,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 
   : 보수적이지 않고, 낙관적으로 생각함 (자원을 반납할거라 생각)
 
-  (그림)
+![낙관적일때](https://user-images.githubusercontent.com/58247800/103292841-fe959180-4a31-11eb-8468-c9a3a4fb1c5f.PNG)
 
 => No deadlock : sequence <P(0)-P(2)-P(3)-P(1)-P(4)> will work!
 
