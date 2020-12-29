@@ -2060,7 +2060,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 
 : deadlock이 발생했는지 알아보기 위해 사용.
 
-(그림)
+![자원할당 그래프](https://user-images.githubusercontent.com/58247800/103292570-70b9a680-4a31-11eb-88b1-4e8ff0a49150.PNG)
 
 - vertex
 
@@ -2072,7 +2072,8 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 
 프로세스 -> 자원 (이 프로세스가 해당 자원을 요청. 아직 획득하진 못함)
 
-(그림)
+![자원할당 그래프](https://user-images.githubusercontent.com/58247800/103292570-70b9a680-4a31-11eb-88b1-4e8ff0a49150.PNG)
+![자원할당 그래프2](https://user-images.githubusercontent.com/58247800/103292586-7b743b80-4a31-11eb-9c03-d495d66cb2a6.PNG)
 
 - 그래프에 cycle이 없으면 deadlock이 아니다
 - 그래프에 cycle이 있으면
@@ -2144,7 +2145,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 - 시스템이 safe state에 있으면 => no deadlock
 - 시스템이 unsafe state에 있으면 => possibility of deadlock
 
-(그림)
+![safeunsafe](https://user-images.githubusercontent.com/58247800/103292599-83cc7680-4a31-11eb-93d8-ed22c5471270.PNG)
 
 - deadlock avoidance 
   - 시스템이 unsafe state에 들어가지 않는 것을 보장
@@ -2156,7 +2157,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 
 - **1) 자원당 instance가 한 개일 때** => **resource allocation graph 알고리즘** 사용
 
-  (그림)
+![instance한개일때](https://user-images.githubusercontent.com/58247800/103292611-8929c100-4a31-11eb-97de-37d2b53a78e5.PNG)
 
   - claim edge (p(i) -> R(j))
     - 프로세스 p(i)가 자원 R(j)를 미래에 요청할 수 있음 (점선)
@@ -2173,7 +2174,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 
   : **Need(각 프로세스의 자원 요청)를 받아들일지 아닐지를 결정!!** 항상 최악의 상황을 가정하며, 굉장히 보수적임. **프로세스들이 본인의 최대 요청을 할 것이라 가정하고, 가용 자원(Available)에서 줄 수 있는지를 본다.** 가용자원으로 충족되면 처리되고, 추가 요청이 가용자원으로 충족되지 않을 시에는 처리되지 않음.
 
-  (그림)
+![Bankers알고리즘](https://user-images.githubusercontent.com/58247800/103292629-92b32900-4a31-11eb-81cf-5fe9bfb236e5.PNG)
 
   - 각 프로세스는 최대로 사용하는 자원의 수를 미리 알 수 있음(Max), 하지만 어느 시점에 필요할지는 알 수 없다.
   - 평생에 요청할 수 있는 최대 자원의 수는 Need (Max - Allocation)
