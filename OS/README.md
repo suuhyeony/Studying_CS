@@ -2074,7 +2074,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 
 <br/>
 
-![자원할당 그래프](https://user-images.githubusercontent.com/58247800/103292570-70b9a680-4a31-11eb-88b1-4e8ff0a49150.PNG)
+![자원할당 그래프1](https://user-images.githubusercontent.com/58247800/103294509-571a5e00-4a35-11eb-9622-82f6304ef996.PNG)
 ![자원할당 그래프2](https://user-images.githubusercontent.com/58247800/103292586-7b743b80-4a31-11eb-9c03-d495d66cb2a6.PNG)
 
 - 그래프에 cycle이 없으면 deadlock이 아니다
