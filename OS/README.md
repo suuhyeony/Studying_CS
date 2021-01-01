@@ -2243,6 +2243,7 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
       - 동일한 프로세스가 계속해서 victim으로 선정되는 경우
       - cost factor에 rollback 횟수도 같이 고려 (꼭 비용만 최소화하는게 아니라~)
       
+
 <br/>
 
 **- 4) Deadlock Ignorance**
@@ -2252,3 +2253,229 @@ p(0)이 A를 획득하고 CPU 뺏김, p(1)이 B를 가진 상황에서 A를 가�
 - deadlock이 매우 드물게 발생하므로, deadlock에 대한 조치 자체가 더 큰 오버헤드일 수 있다.
 - 만약 시스템에 deadlock이 발생한 경우, 시스템이 비정상적으로 작동하는 것을 사람이 느낀 후, 직접 프로세스를 kill하는 등의 방법으로 대처
 - UNIX, Windows 등 대부분의 범용 OS가 채택
+
+
+
+## Ch8. Memory Management
+
+**Memory** : 주소를 통해 접근하는 매체
+
+- Memory Address와 주소변환
+
+  : 프로그램마다 0번지부터 시작하는 독자적인 주소(논리적 주소)가 있지만, 실행되려면 물리적 메모리 어딘가로 올라가야 하고, 주소가 바뀌게 됨(주소 변환).
+
+  - **논리적 주소, Logical address** (= virtual address)
+    - 각 프로세스마다 독립적으로 가지는 주소 공간 (프로그램이 실행되면)
+    - 각 프로세스마다 0번지부터 시작
+    - **CPU가 보는 주소는 logical address**임
+  - **물리적 주소, Physical address**
+    - 메모리에 실제 올라가는 위치 (메모리에 프로그램이 어디로 올라가느냐)
+    - 아랫 부분에는 OS 커널이 올라가 있고, 상위 부분에는 여러 프로그램들이 섞여서 올라가게 됨.
+  - **주소 바인딩 (주소변환)** : 어떤 프로그램이 물리적 메모리 어디로 올라갈지 메모리 주소를 결정하는 것.
+    - Symbolic Address(프로그래머 입장에서 함수나 변수 이름) -> Logical Address -> Physical address 
+    - 논리적 주소에서 물리적 주소로 넘어가는 시점이 언제인가? (**next page**)
+
+
+
+**주소 바인딩 (Address Binding)** 방법
+
+(그림)
+
+소스코드가 컴파일 되어, 실행파일로 만들어지면 symbolic 주소였던게 숫자 주소로 바뀌게 된다. (프로그램마다 가지는 logical 주소)
+
+- 1) **Compile time binding** : 컴파일 시에 주소 바인딩이 이루어짐
+
+  : 컴파일 시, 이미 주소가 결정되므로, physical 메모리에 logical 주소와 동일한 주소로 올라가야 함. 주소가 그대로 fix되므로 절대 코드(absolute code) 생성. 위치 변경하려면 컴파일을 다시 해야함. (비효율적, 현재는 사용하지 않음)
+
+  - 물리적 메모리 주소가 컴파일 시 알려짐
+  - 시작 위치 변경 시, 재컴파일 (주소 바꾸고 싶을 때)
+  - 컴파일러는 **절대 코드(absolute code)** 생성 (**논리적 주소 = 물리적 주소**)
+
+- 2) **Load time binding** : 실행이 시작될 때 주소 바인딩이 이루어짐
+
+  : 프로그램이 실행되면 시작. physical 메모리가 비어있는 곳부터 올린다.
+
+  - Loader의 책임하에 물리적 메모리 주소 부여
+  - 컴파일러가 **재배치가능코드(relocatable code)**를 생성한 경우 가능 (비어있는 위치에 올라갈 수 있도록)
+
+- 3) Execution time binding ( = **Run time binding**) : 시작된 후에도 주소를 옮길 수 있음
+
+  : 프로그램이 실행되면 시작. 중간에 주소가 바뀔 수 있음. (현대 컴퓨터 시스템)
+
+  - **수행이 시작된 이후에도 프로세스의 메모리 상 위치를 옮길 수 있음**
+  - CPU가 주소를 참조할 때마다 binding을 점검 (**address mapping table**)
+  - 따라서, 하드웨어적인 지원이 필요 (ex. base and limit registers, **MMU** 라는 주소변환용 하드웨어를 통해 그때그때 주소 변환을 해줘야 함)
+
+*메모리의 주소는 바뀔 수 있지만, 코드 상의 주소(Add 20, 30)는 그대로 남아있게 됨. (CPU가 바라보는 주소가 logical address인 이유!) 
+
+CPU가 instruction을 읽어들일 때, 20, 30번지 값을 달라고 요청하면, 주소변환을 하여 물리적 메모리에서 값을 찾고 CPU에게 전달함.
+
+<br/>
+
+**Memory-Management Unit(MMU)**
+
+: 주소변환을 지원해주는 하드웨어
+
+logical address를 physical address로 매핑해주는 hardware device
+
+기본적인 MMU에서는 레지스터 두 개(relocation register, limit register)를 가지고 주소변환을 한다.
+
+- MMU scheme
+  - 사용자 프로세스가 CPU에서 수행되며 생성해내는 모든 주소값에 대해 **base register (= relocation register)**의 값을 더한다
+- user program
+  - logical address만을 다룬다
+  - 실제 physical address를 볼 수 없으며 알 필요가 없다
+
+
+
+**Dynamic Relocation**
+
+(그림)
+
+p1이 현재 실행중이고, 물리적 메모리에는 14000번 부터 올라가 있다.
+
+CPU가 346번지(logical 주소)에 있는 내용을 달라 요청 -> MMU가 주소변환 해줌(프로그램의 시작위치에 논리적 주소위치를 더한다 : 14000 + 346)
+
+즉, relocation register에 프로그램의 물리적 주소의 시작 위치를 저장해 놓는다. (14000)
+
+limit register는 해당 프로그램의 크기(3000)를 담고있다. 다른 프로그램을 실행해버리는 등의 악의적인 행위를 막을 수 있다.
+
+<br/>
+
+**주소변환을 위한 하드웨어 지원**
+
+(그림)
+
+운영체제 및 사용자 프로세스 간의 **메모리 보호를 위해 사용하는 레지스터**
+
+- **Relocation register** : 접근할 수 있는 물리적 메모리 주소의 최소값 (=base register)
+- **Limit register** : 논리적 주소의 범위
+
+<br/>
+
+CPU의 논리적 주소 요청을 보고, limit register보다 작은지 검토해본다. 작으면 그대로 진행(논리적 주소값에 relocation register값을 더해 주소변환을 하고, 물리적 메모리의 값을 읽어 CPU에게 전달)하고, 크면 trap을 건다. (OS에게 CPU를 넘기고, 어떤 응징을 하게됨)
+
+<br/>
+
+**용어설명**
+
+**1) Dynamic Loading**
+
+: 프로그램을 메모리에 동적으로 올린다.
+
+- 프로세스 전체를 메모리에 미리 다 올리는 것이 아니라, 해당 루틴이 불려질 때 메모리에 load하는 것. (동적으로 올림, 효율적)
+- memory utilization의 향상
+- 가끔씩 사용되는(혹~시 그런 일이 생기면,,) 많은 양의 코드의 경우 유용 (ex. 오류 처리 루틴)
+- **운영체제의 특별한 지원없이, 프로그램 자체에서 구현 가능**(**OS는 라이브러리를 통해 dynamic loading 지원 가능**)
+
+<br/>
+
+**2) Overlays**
+
+- 메모리에 프로세스의 부분 중, 실제 필요한 정보만을 올림
+- 프로세스의 크기가 메모리보다 클 때 유용
+- 운영체제의 지원없이 사용자에 의해 구현
+- **작은 공간의 메모리를 사용하던 초창기 시스템에서 수작업으로 프로그래머가 구현**
+  - = "Manual Overlay"
+  - 프로그래밍이 매우 복잡
+
+<br/>
+
+**3) Swapping**
+
+: 프로세스를 일시적으로 메모리에서 backing sotre (하드 디스크)로 통째로 쫓아내는 것.
+
+- Backing store (= swap area)
+
+  - 디스크
+    - 많은 사용자의 프로세스 이미지를 담을 만큼 충분히 빠르고 큰 저장공간
+
+- Swap in / Swap out
+
+  (그림)
+
+  -swap out : 메모리에서 backing store로 쫓겨남
+
+  -swap in : backing store에서 메모리로 다시 올라옴
+
+  
+
+  - 일반적으로 **중기 스케줄러(swapper)에 의해 swap out 시킬 프로세스 선정**
+  - priority-based CPU scheduling algorithm
+    - priority가 낮은 프로세스를 swapped out 시킴
+    - priority가 높은 프로세스를 메모리에 올려놓음
+  - Compile time 혹은 load time binding에서는 원래 메모리 위치로 swap in 해야 함 (비효율적)
+  - Execution time binding에서는 **추후 빈 메모리 영역 아무 곳에나 올릴 수 있음** (효율적)
+  - swap time은 대부분 transfer time (swap되는 양에 비례하는 시간)임
+
+<br/>
+
+**4) Dynamic Linking**
+
+: Linking을 실행 시간(execution time)까지 미루는 기법.
+
+*linking이란 여러 곳에 존재하는 컴파일 파일들을 묶어서 하나의 실행파일로 만드는 것.
+
+- Static linking
+  - **라이브러리가 프로그램의 실행 파일 코드에 포함됨**
+  - 실행 파일의 크기가 커짐
+  - 동일한 라이브러리를 각각의 프로세스가 메모리에 올리므로, 메모리 낭비 (ex. printf 함수의 라이브러리 코드)
+- **Dynamic linking**
+  - **라이브러리(shared library)가 코드에 포함되지 않고, 실행시 연결(link)됨**
+  - 라이브러리 **호출 부분에** 라이브러리 **루틴의 위치를 찾기 위한 stub(포인터)이라는 작은 코드를 둠**
+  - 라이브러리가 이미 메모리에 있으면 그 루틴의 주소로 가고, 없으면 디스크에서 읽어옴.
+  - 운영체제의 도움이 필요
+
+<br/>
+
+**Allocation of Physical Memory**
+
+물리적 메모리를 어떻게 관리할 것인가?
+
+(그림)
+
+- 메모리는 일반적으로 두 영역으로 나뉘어 사용
+  - OS 상주영역 (하단부)
+    - interrupt vector와 함께 낮은 주소 영역 사용
+  - 사용자 프로세스 영역 (상단부)
+    - 높은 주소 영역 사용
+
+<br/>
+
+- 사용자 프로세스 영역의 할당 방법
+
+  - **1) Contiguous allocation (연속 할당)**
+
+    : 각각의 프로세스가 **메모리의 연속적인 공간에 (한 군데에 통째로) 적재**되도록 하는 것 
+
+    - Fixed partition allocation
+    - Variable partition allocation
+
+  - **2) Noncontiguous allocation (불연속 할당)**
+
+    : 하나의 프로세스가 **메모리의 여러 영역에 분산되어** 올라갈 수 있음 (현대에서 쓰임)
+
+    - Paging (같은 크기의 페이지로 잘라서 페이지 단위로 올라가고 내려감)
+    - Segmentation
+    - Paged Segmentation
+
+<br/>
+
+**1) Contiguous Allocation (연속 할당)**
+
+(그림)
+
+- **고정분할(Fixed partition) 방식**
+  - **물리적 메모리를 몇 개의 영구적 분할(partition)로 미리 나눔**
+  - 분할의 크기가 모두 동일한 방식과 서로 다른 방식이 존재
+  - 분할당 하나의 프로그램 적재 (크기에 맞도록)
+  - 융통성이 없음
+    - 동시에 메모리에 load되는 프로그램의 수가 고정됨
+    - 최대 수행 가능 프로그램 크기 제한
+  - Internal fragmentation 발생 (external fragmentation도 발생)
+- **가변분할(Variable partition) 방식**
+  - 프로그램의 크기를 고려해서 할당
+  - 분할의 크기, 개수가 동적으로 변함
+  - 기술적 관리 기법 필요
+  - External fragmentation 발생
+
