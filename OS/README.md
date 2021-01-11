@@ -1,4 +1,4 @@
-## (Ch1. 운영체제의 개요
+## Ch1. 운영체제의 개요
 
 **-운영체제란?**
 
@@ -2704,3 +2704,160 @@ CPU가 논리적 주소를 주면, page table 두 단계를 거쳐서 주소변�
 
 - P(2)는 outer page table의 page에서의 변위(displacement)
 
+
+
+**Multilevel Paging and Performance**
+
+- 주소공간이 더 커지면 다단계 페이지 테이블 필요
+
+- 각 단계의 페이지 테이블이 메모리에 존재하므로 논리적 주소에서 물리적 주소로 변환하는데 더 많은 메모리 접근 필요
+
+- TLB를 통해 메모리 접근 시간을 줄일 수 있음
+
+- 4단계 페이지 테이블을 사용하는 경우,
+
+  - 메모리 접근 시간이 100ns, TLB 접근 시간이 20ns이고
+
+  - TLB hit ratio가 98%인 경우,
+
+    effective memory access time = 0.98 * 120 + 0.02 * 520 = 128 ns
+
+    결과적으로 주소변환을 위해 28ns만 소요.
+
+
+
+**Valid (v) / Invaild (i) Bit in a Page Table**
+
+: 페이지 테이블에 주소 변환 정보만 들어있는 것이 아니라, 엔트리마다 부가적인 비트가 들어가 있다. (v로 표시된 valid bit와 i로 표시된 invalid bit)
+
+(그림)
+
+페이지 테이블에는 사용되지 않는 주소공간을 위해서도 엔트리가 만들어져야 한다. (ex. 6, 7번째 엔트리는 사용이 되지 않음. i로 표시함으로써 0이 주소를 가리키는게 아니라 사용되지 않는다로 이해.)
+
+- 0번 페이지가 2번 페이지 프레임에 실제로 올라가 있다.(v)
+- (i) 이 페이지가 이 프로그램에서 아예 사용되지 않거나, 당장 필요하지 않음.
+
+
+
+**Memory Protection**
+
+- Page table의 각 entry마다 아래의 bit를 둔다.
+  - Protection bit
+    - page에 대한 접근 권한 (read/write/read-only) - 연산에 대한
+  - Valid-invalid bit
+    - "valid"는 해당 주소의 frame에 그 프로세스를 구성하는 유효한 내용이 있음을 뜻함 (접근 허용)
+    - "invalid"는 해당 주소의 frame에 유효한 내용이 없음*을 뜻함 (접근 불허)
+
+*1) 프로세스가 그 주소 부분을 사용하지 않는 경우
+
+  2) 해당 페이지가 메모리에 올라와 있지 않고 swap area에 있는 경우
+
+
+
+**Inverted Page Table**
+
+- page table이 매우 큰 이유
+
+  - 모든 process 별로 그 논리적 주소에 대응하는 모든 page에 대해 page table entry가 존재
+  - 대응하는 page가 메모리에 있든 아니든 간에 page table에는 entry로 존재
+
+- **Inverted page table** (주소변환을 역발상으로 바꿈)
+
+  : page table의 entry가 프로세스의 page 개수만큼 존재하는 것이 아니라, **물리적 메모리의 page frame 개수만큼 존재. (page table에 대한 공간을 줄이기 위해 나온 개념!)**
+
+  - Page frame 하나당 page table에 하나의 entry를 둔 것 (system-wide하게)
+  - 각 page table entry는 각각의 물리적 메모리의 page frame이 담고 있는 내용 표시 (**process-id, process의 논리적 메모리**)
+  - **단점 ) 테이블 전체를 탐색해야 함** (테이블의 장점이 무색)
+  - 조치 ) associative register 사용 (비쌈)
+
+(그림)
+
+
+
+**Shared Page**
+
+: 프로그램을 구성하는 페이지들 중에는 다른 프로세스들과 공유할 수 있는 페이지가 있다. 여러 프로세스가 공유할 수 있는 코드 부분을 같은 물리적 메모리 프레임으로 매핑해주는 것.
+
+- shared code
+  - **Re-entrant Code** 재진입 가능 코드 (=**Pure code**) 
+  - **read-only**로 세팅하여 **프로세스 간에 하나의 code만 물리적 메모리에 올림** (ex. text editors, compilers, window systems)
+  - **Shared code는 모든 프로세스의 논리적 주소 공간에서 동일 위치에 있어야 함**
+- Private code and data
+  - 각 프로세스들은 독자적으로 메모리에 올림
+  - Private data는 논리적 주소 공간의 아무 곳에 와도 무방
+
+(그림)
+
+서로 다른 프로세스 P(1, 2, 3)이 있다. 이 프로그램들이 같은 코드를 가지고 프로그램을 돌린다고 하자. shared code는 한 copy만 물리적 메모리에 올리자!
+
+(ed1, 2, 3은 물리적 메모리 페이지 3, 4, 6 프레임에 올라와 있다)
+
+
+
+**Segmentation 기법**
+
+: 프로세스를 구성하는 주소공간을 의미 단위(segment)로 쪼갠 것. (ex. code, stack)
+
+
+
+- 프로그램은 의미 단위인 여러 개의 segment로 구성
+  - 작게는 프로그램을 구성하는 함수 하나하나를 세그먼트로 정의
+  - 크게는 프로그램 전체를 하나의 세그먼트로 정의 가능
+  - 일반적으로는 code, data, stack 부분이 하나씩의 세그먼트로 정의됨
+- Segment는 다음과 같은 logical unit들임
+  - main(), function, global variables, stack, symbol table, arrays
+
+
+
+**Segmentation Architecture**
+
+- Logical address는 다음의 두 가지로 구성
+
+  - < segment-number, offset >
+
+- Segment table (segment별로 주소 변환이 필요하므로)
+
+  - each table entry has:
+
+    - base - segment의 물리적 주소 시작위치를 나타냄
+
+    - limit - segment의 길이(그 프로그램이 사용하는 segment의 개수)를 나타냄
+
+      **세그먼트는 의미단위로 잘려있으므로 각 길이가 다름. (그래서 limit이 필요함)**
+
+- Segment-table base register (STBR)
+
+  - 물리적 메모리에서의 segment table의 위치
+
+- Segment-table length register (STLR)
+
+  - 프로그램이 사용하는 segment의 수
+
+    segment number s is legal if **s < STLR**
+
+![image-20210111205001062](C:\Users\multicampus\AppData\Roaming\Typora\typora-user-images\image-20210111205001062.png)
+
+CPU가 논리주소를 주면, s(세그먼트) / d(오프셋) 두 부분으로 나눔. -> **s <  STLR, d < limit** 인지 체크 -> base로부터 d만큼 더해서 주소변환. base에서부터 이 세그먼트가 시작되고, base+d에서부터 원하는 내용이 들어있게 됨.
+
+
+
+- Protection
+
+  - 각 세그먼트 별로 protection bit가 있음
+  - Each entry:
+    - Valid bit = 0 -> illegal segment
+    - Read/Write/Execution 권한 bit
+
+- Sharing
+
+  - shared segment
+  - same segment number
+
+  ***segment는 의미 단위이기 때문에 공유와 보안에 있어 paging보다 훨씬 효과적**이다.
+
+- Allocation
+
+  - first fit / best fit을 써야함
+  - external fragmentation 발생
+
+  *segment의 길이가 동일하지 않으므로 가변분할 방식에서와 동일한 문제점들이 발생
