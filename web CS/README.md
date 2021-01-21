@@ -25,3 +25,49 @@
     - 렌더트리 생성 : DOM + CSSOM => 렌더 트리를 생성. (시각적 속성이 있는 사각형을 포함. 정해진 순서대로 화면에 표시된다.)
     - 배치 : 각 노드가 화면의 정확한 위치에 표시됨.
     - 그리기 : UI 백엔드에서 렌더트리의 각 노드를 가로지르며 형상을 만들어 냄.
+
+
+
+### 2. DOM (Document Object Model)
+
+: HTML, XML 문서에 대한 인터페이스. 프로그래밍 언어가 페이지의 콘텐츠/구조/스타일을 읽고 조작할 수 있도록 API를 제공한다. (DOM에 접근, 조작)
+
+- 뷰 포트에 무엇을 렌더링할지 결정하기 위해 사용됨.
+- 페이지의 콘텐츠/구조/스타일이 JS프로그램에 의해 수정되기 위해 사용됨.
+
+HTML 문서의 객체 기반 표현 방식으로, 단순 텍스트로 구성된 HTML 문서의 내용과 구조가 객체 모델로 변환된다. (구조화된 노드, property, method를 갖고 있는 objects로 문서를 표현)
+
+DOM의 개체 구조는 **노드 트리**로 표현된다. 루트 요소인 <html>은 부모줄기, 루트 요소에 내포된 태그들은 자식 나무가지, 요소 안의 컨텐츠는 잎.
+
+- 항상 유효한 HTML 형식이다.
+- JS에 의해 수정될 수 있는 동적 모델이어야 한다.
+- 가상 요소를 포함하지 않는다.
+- 보이지 않는 요소까지 포함한다. (`display: none`)
+
+
+
+-예시
+
+```html
+<html>
+    <head>
+        <script>
+          window.onload = function() {
+              let title = document.createElement("h1");
+              let title_text = document.createTextNode("Welcome!");
+              title.appendChild(title_text);
+              document.body.appendChild(title);
+          }
+        </script>
+    </head>
+    <body>
+    </body>
+</html>
+```
+
+
+
+참고 문서
+
+https://wit.nts-corp.com/2019/02/14/5522
+
