@@ -578,7 +578,67 @@ def get_max_value(data_list, capacity):
 
 
 
-### 7. 백트래킹 (backtracking)
+### 7. 이진탐색 (binary search)
+
+---
+
+: 탐색 범위를 절반씩 좁혀가며 데이터를 탐색하는 방법. (데이터가 정렬되어 있어야만 사용 가능!)
+
+찾으려는 타겟 vs 시작점과 끝점의 중간에 있는 데이터
+
+- 중간점의 데이터가 더 작으면 오른쪽 확인 (시작점을 한칸 더 늘려줌)
+- 중간점의 데이터가 더 크면 왼쪽 확인 (끝점을 한칸 더 줄여줌)
+
+
+
+```python
+// 1. 재귀함수로 구현
+def binary_search(arr, target, start, end):
+    if start > end:
+        return None
+    mid = (start + end) // 2
+    
+    if arr[mid] == target:
+        return mid
+    elif arr[mid] < target:
+        return binary_search(arr, target, mid+1, end)
+    else:
+        return binary_search(arr, target, start, mid-1)
+    
+def solution(array, t_data):
+    result = binary_search(array, t_data, 0, len(array)-1)
+    
+    if result == None:
+        return '원소가 존재하지 않습니다.'
+    else:
+        return result + 1
+    
+// 2. 반복문으로 구현
+def binary_search(arr, target, start, end):
+    while start <= end:
+        mid = (start + end) // 2
+        
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            start = mid + 1
+        else:
+            end = mid - 1
+    return None
+
+def solution(array, t_data):
+    result = binary_search(array, t_data, 0, len(array)-1)
+    if result == None:
+        return '원소가 존재하지 않습니다.'
+    else:
+        return result + 1
+```
+
+
+
+
+
+### 8. 백트래킹 (backtracking)
 
 ---
 
