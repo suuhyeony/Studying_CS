@@ -1,7 +1,24 @@
-# CS 공부 기록 
-- 목차
-  1. 알고리즘 & 자료구조
-  2. 운영체제
-  3. 네트워크
-  4. 데이터베이스
-  5.  알고리즘 문제풀이
+## My CS study log
+
+#### 목차
+
+- Algorithm
+  - Sort
+  - Recursive call
+  - Dynamic programming
+  - Search (sequential / binary)
+  - DFS/BFS
+  - shortest Path (dijkstra)
+  - Greedy
+  - Backtracking
+- Operating System
+  - system structure
+  - process (management & synchronization)
+  - CPU scheduling
+  - deadlock
+  - memory (management)
+- Networking
+- DataBase
+- Web CS
+  - browser rendering
+  - DOM
