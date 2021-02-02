@@ -1,8 +1,8 @@
-## My CS study log
+## Today I Learned
 
 #### 목차
 
-- Algorithm
+- **Algorithm**
   - Sort
   - Recursive call
   - Dynamic programming
@@ -11,7 +11,7 @@
   - shortest Path (dijkstra)
   - Greedy
   - Backtracking
-- Operating System
+- **Operating System**
   - system structure
   - process (management & synchronization)
   - CPU scheduling
@@ -19,6 +19,12 @@
   - memory (management)
 - Networking
 - DataBase
-- Web CS
+- **Web CS**
   - browser rendering
   - DOM
+  - CORS
+  - cross browsing
+  - SSR vs CSR
+  - Cookie / Session / Cache
+- **JavaScript**
+  - Event Loop
