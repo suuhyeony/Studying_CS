@@ -62,15 +62,17 @@ ex. setTimeout()이 발생했을 때, 먼저 call stack에 올리고 -> web API�
 
 ### 3. Hoisting
 
-: 끌어올리기. 변수의 정의가 그 범위에 따라 선언과 할당으로 분리되는 것.
+- : 끌어올리기. (변수의 정의가 그 범위에 따라 선언과 할당으로 분리되는 것.)
 
-`var`키워드로 선언된 모든 변수 선언은 호이스트된다.
+  스코프 내부 어디서든 변수 선언은 최상위에 선언된 것처럼 행동!
 
-- 선언 : `var x;`이 부분이 끌어올려진다!
+  `var`키워드로 선언된 모든 변수 선언은 호이스트된다.
 
-  ​           선언문은 항시 자바스크립트 엔진 구동시 가장 최우선으로 해석되므로 호이스팅됨.
+  - 선언 : `var x;`이 부분이 끌어올려진다!
 
-- 할당 : `x = 10;` 할당 구문은 런타임 과정에서 이루어지기 때문에 호이스팅 되지 않는다.
+    ​           선언문은 항시 자바스크립트 엔진 구동시 가장 최우선으로 해석되므로 호이스팅됨.
+
+  - 할당 : `x = 10;` 할당 구문은 런타임 과정에서 이루어지기 때문에 호이스팅 되지 않는다.
 
 ```javascript
 function getX() {
@@ -108,3 +110,169 @@ function foo = function() {
 
 `let`이나 `const`는 호이스팅을 지원하지 않는 것이 아니라, 여기에 변수가 선언되기 전에는 그 변수를 실행할 수 없다는 기능을 추가한 것이다!
 
+
+
+### 4. Closure
+
+: **함수와 그 함수가 실행될 범위의 연결**. (외부 함수에 접근할 수 있는 내부 함수 혹은 이러한 원리)
+
+- 스코프에 따라 내부함수의 범위에서는 외부 함수 범위에 있는 변수에 접근이 가능하지만, 그 반대는 실현이 불가 (**변수를 은닉화**할 수 있다.)
+- 외부함수는 외부함수의 지역변수를 사용하는 내부함수가 소멸될 때까지 소멸되지 않음. (변수 캡쳐)
+- JS에서는 **함수를 리턴할 때, 클로저를 형성**하고, 이 때 **함수와 함수가 선언된 어휘적 환경의 조합(당시 관계되는 코드들)의 참조를 기억**한다.
+
+
+
+#### 언제 사용할까?
+
+- 어떤 데이터와 그 데이터를 조작하는 함수를 연관시켜줄 때 (이벤트 함수)
+- 정보 은닉 : private 변수를 만들고, 익명 함수에서 반환된 퍼블릭 함수를 통해서만 접근 가능
+- 캡슐화 : 고유의 클로저를 통한 변수의 다른 버전을 참조. (하나의 클로저에서 변수 값을 변경해도, 다른 클로저의 값에는 영향을 주지 않음)
+
+
+
+### 5. this
+
+: JS에서 모든 함수는 실행될 때마다 함수 내부에 `this`라는 객체가 추가된다. `arguments`라는 유사 배열 객체와 함께 함수 내부로 암묵적으로 전달되는 것. 따라서 'this'의 값은 **함수를 호출한 방법에 의해 결정**된다. 즉, 어떻게 함수를 호출했느냐에 따라 'this'의 값이 바뀐다.
+
+```javascript
+const name = 'window';
+
+function log() {
+    console.log(this.name); // this는 대부분 객체이다.
+}
+
+const obj = {
+    name: 'dotgae',
+    logName: log
+};
+
+log();  // window
+obj.logName();  // dotgae
+```
+
+
+
+#### this를 실행하는 4가지 방법
+
+```javascript
+// 1. Regular function call (일반함수 실행)
+// 1-1) 일반모드일 때, this는 window 객체
+const age = 100;
+function foo() {
+    const age = 99;
+    bar();  // 일반함수 실행 방법!
+}
+
+function bar() {
+    console.log(this.age);  // 'this' === global object (window 객체)
+}
+
+foo();  // 100
+
+
+// 1-2) strict 모드일 때, this는 undefined
+'use strict';
+const name = 'dotgae';
+function foo() {
+    console.log(this.name);  // 'this' === undefined
+}
+
+foo();  // undefined
+
+
+// 2. Dot Notation (객체의 메서드를 호출할 때)
+function foo() {
+    console.log(this.age);
+}
+const age = 100;
+const dotgae = {
+    age: 20,
+    foo: foo
+};
+const jun = {
+    age: 30,
+    foo: foo
+};
+
+dotgae.foo();  // 20 ('this' === .앞의 객체를 가리킴)
+jun.foo();  // 30
+
+
+// 3. call, bind, apply 사용 (상황에 의존하지 않고 this를 JS코드로 주입/설정 가능)
+// 3-1) call, apply (인수가 하나일 때)
+const age = 100;
+function foo() {
+    console.log(this.age);
+}
+const dotgae = {
+    age: 20
+};
+const jun = {
+    age: 30
+};
+
+foo();  // 100
+foo.call(jun);  // 30  (foo 함수를 실행할 때 인자로 jun을 넘겨주어 'this' === jun)
+foo.apply(dotgae);  // 20 (위와 같다)
+
+// 3-2) call, apply (인수가 두 개 이상일 때)
+const age = 100;
+function foo(a, b, c, d) {
+    console.log(this.age);
+    console.log(arguments);
+}
+const dotgae = {
+    age: 20
+};
+
+foo.call(dotgae, 'cute', 'smart', 'dev', 'intp')
+// 첫번째 인수인 dotgae를 인자로 넘겨주어 'this' === dotgae  // 20
+// 나머지 인수들은 foo 함수의 인자로 차례대로 넘어간다.  // [뒤에 것들 다] 출력
+foo.apply(dotgae, ['cute', 'smart', 'dev', 'intp'])
+// apply는 인수를 두 개만 설정 가능!! 기능은 call과 같음
+// 20, ['cute', 'smart', 'dev', 'intp']
+
+// 3-3) bind
+const age = 100;
+function foo() {
+    console.log(this.age);
+};
+const dotgae = {
+    age: 20
+};
+const bar = foo.bind(dotgae);  // 'this'값을 dotgae로 bind 시켜놓고, 함수를 리턴
+bar();  // 20
+
+
+// 4. 'new' keyword (생성자 함수를 통해 객체를 생성할 때)
+// 4-1)
+function foo() {
+    // 2) this = {};
+    this.name = 'dotgae';
+    // 3) {name: 'dotgae'}
+    // 4) return this; // 자동으로 this 객체를 리턴해줌
+}
+
+const dev = new foo();  // 1) 'this'에는 빈 객체가 할당되어 새 함수를 리턴함!
+console.log(dev);  // {name: 'dotgae'}
+
+// 4-2)
+function Person(name, age) {
+    this.name = name;
+    this.age = age;
+}
+const dotgae = new Person('dotgae PARK', 20);
+const jun = new Person('junho', 30);
+
+console.log(dotgae);  // 'dotgae PARK', 20
+console.log(jun);  // 'junho', 30
+```
+
+#### bind
+
+: 함수를 어떻게 호출했느냐와 상관없이 this값을 설정할 수 있는 메서드.
+
+- this는 원본 함수를 가진 새로운 함수를 생성한다.
+- 함수를 **선언**할 때, this와 파라미터를 지정해줄 수 있다. `function(val1, val2) {}.bind(this, 1, 2)`
+
+*apply, call은 함수를 **호출**할 때, this와 파라미터를 지정.
