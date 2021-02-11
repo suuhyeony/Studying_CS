@@ -1,5 +1,48 @@
 ## JavaScript
 
+### 0. 데이터 타입
+
+: 자바스크립트에는 원시타입(primitive type)과 참조타입(reference type)이라는 자료형이 존재.
+
+- 원시타입(primitive type) - number, string, boolean, null, undefined, symbol
+  - 자바스크립트에서 사용할 수 있는 데이터 및 정보의 가장 단순한 형태 (객체가 아닌 것들. 값 그 자체로 저장된 것)
+  - 변수에 할당될 때, 메모리 상에 고정된 크기로 저장됨
+  - 해당 변수가 원시 데이터 값을 보관 (값이 복사됨)
+  - 비교 시, 저장된 값을 비교
+- 참조타입(reference type) - 객체 (배열, 함수, 정규표현식)
+  - 크기가 정해져 있지 않음
+  - 변수에 할당될 때, 값이 직접 해당 변수에 저장될 수 없음 (변수에는 데이터에 대한 참조만 저장. 즉, 참조는 참조타입 데이터의 주소이지 해당 데이터의 값이 아님!)
+  - 비교 시, 저장되어 있는 참조(메모리의 번지수)를 비교
+
+#### number
+
+: 다른 언어와는 달리(길이를 미리 정해줌), 자바스크립트에는 number가 하나임
+
+#### boolean
+
+- false - 0, null, undefined, NaN, ' '
+- true - 다른 모든 값
+
+#### null
+
+: 빈 값. 변수에 값이 텅텅 비어지게 할당한 것. `let nothing = null`
+
+#### undefined
+
+: 변수가 선언되었으나, 아직 할당되지 않음.
+
+#### symbol
+
+: 고유한 식별자가 필요하거나, 동시 다발적으로 일어나는 코드에서 우선순위를 주고 싶을 때 사용
+
+`const symbol1 = Symbol('id')` 동일한 string으로 작성해도, 다른 symbol로 만들어짐
+
+
+
+*JS는 동적타이핑 언어이다. 변수의 타입을 선언하지 않아도, 런타임 때 변수의 타입이 자동으로 파악됨. 하나의 변수에 여러 타입의 값을 넣을 수 있음. (문제 발생 => 타입스크립트 사용)
+
+
+
 ### 1. Call Stack
 
 : 자바스크립트가 함수 실행을 핸들하는 방법 중 하나. (한 번에 하나의 task만 처리)
@@ -34,7 +77,89 @@ maximum call stack 제한이 있음.
 
 
 
-### 2. Event Loop
+### 2. 변수 (var / let / const), scope
+
+#### 변수의 생성과정
+
+1) 선언 단계 - `let x;`
+
+2) 초기화 단계 - undefined를 할당해주는 단계
+
+3) 할당 단계 - `x = 10;`
+
+
+
+#### scope
+
+1) 함수 스코프 : 함수 내에서 선언된 변수만 그 지역변수가 되는 것. => 유일하게 벗어날 수 없는 스코프가 함수
+
+2) 블록 스코프 : 변수는 코드블록 내에서만 유효하며, 밖에서 접근할 수 없음.
+
+
+
+- **var** : 선언과 초기화가 한번에 된다. **함수 스코프**이다.
+
+  ```javascript
+  // 1) 한번 선언된 변수를 다시 선언할 수 있다.
+  var name = 'cardi';
+  console.log(name);  // cardi
+  
+  var name = 'maegan';
+  console.log(name);  // maegan
+  
+  // 2) 선언하기 전에 사용할 수 있다. (hoisting)
+  console.log(name);  // undefined (선언은 호이스팅O, 할당은 호이스팅X)
+  
+  var name = 'cardi';  // 할당
+  
+  // 3) 함수 스코프이다.
+  // if문에서는 외부에서 지역변수에 접근 가능
+  const age = 30;
+  if (age > 19) {
+      var txt = '성인';
+  }
+  console.log(txt);  // '성인'
+  
+  // 함수 안의 지역 변수는 외부에서 접근 불가
+  function add(num1, num2) {
+      var result = num1 + num2;
+  }
+  
+  add(2, 3);  // 5
+  console.log(result); // 참조 에러
+  ```
+
+  let과 const는 TDZ(Temporal Dead Zone)의 영향을 받기 때문에 할당을 하기 전에는 변수를 사용할 수 없다.
+
+  
+
+- **let** : 선언과 초기화 단계가 분리되어 실행됨. **블록 스코프**이다.
+
+  ```javascript
+  // 
+  let name = 'cardi';
+  console.log(name);  // cardi
+  let name = 'doja';
+  console.log(name);  // syntax에러
+  
+  //
+  console.log(name);
+  let name = 'cardi';  // 참조 에러
+  ```
+
+  
+
+  호이스팅되면서 선언 단계가 발생하지만, 초기화는 실제 코드에 도달했을 때 발생하기 때문에 참조 에러가 나는 것.
+
+- **const** : 선언 + 초기화 + 할당이 모두 같이 되어야 함.  `const hello = 'hi';`
+
+  **블록 스코프**이다.
+
+
+
+
+
+### 3. Event Loop
 
 : 자바스크립트 엔진은 하나의 스레드에서 동작. (stack이 하나, 한번에 하나의 작업만 할 수 있음.)
 
@@ -60,7 +185,7 @@ ex. setTimeout()이 발생했을 때, 먼저 call stack에 올리고 -> web API�
 
 
 
-### 3. Hoisting
+### 4. Hoisting
 
 - : 끌어올리기. (변수의 정의가 그 범위에 따라 선언과 할당으로 분리되는 것.)
 
@@ -112,7 +237,7 @@ function foo = function() {
 
 
 
-### 4. Closure
+### 5. Closure
 
 : **함수와 그 함수가 실행될 범위의 연결**. (외부 함수에 접근할 수 있는 내부 함수 혹은 이러한 원리)
 
@@ -130,7 +255,7 @@ function foo = function() {
 
 
 
-### 5. this
+### 6. this
 
 : JS에서 모든 함수는 실행될 때마다 함수 내부에 `this`라는 객체가 추가된다. `arguments`라는 유사 배열 객체와 함께 함수 내부로 암묵적으로 전달되는 것. 따라서 'this'의 값은 **함수를 호출한 방법에 의해 결정**된다. 즉, 어떻게 함수를 호출했느냐에 따라 'this'의 값이 바뀐다.
 
@@ -276,3 +401,17 @@ console.log(jun);  // 'junho', 30
 - 함수를 **선언**할 때, this와 파라미터를 지정해줄 수 있다. `function(val1, val2) {}.bind(this, 1, 2)`
 
 *apply, call은 함수를 **호출**할 때, this와 파라미터를 지정.
+
+
+
+
+
+### 7. 실행 컨텍스트
+
+#### 컨텍스트의 원칙
+
+- 처음 코드를 싱행 시, **전역 컨텍스트가 생성**되고, **함수 호출 시마다 컨텍스트가 생김**
+- 컨텍스트 생성 시, 컨텍스트 안에 **변수객체(arguments, variable), scope chain, this**가 생성됨
+- 컨텍스트 생성 후, 함수가 실행됨. (사용되는 변수들은 변수객체 안에서 값을 찾고, 없다면 scope chain을 따라 올라가며 찾는다)
+- 함수 실행이 마무리되면, 해당 컨텍스트는 사라진다. (클로저 제외) 페이지가 종료되면 전역 컨텍스트가 사라짐
+
