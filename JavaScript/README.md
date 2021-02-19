@@ -5,7 +5,7 @@
 : 자바스크립트에는 원시타입(primitive type)과 참조타입(reference type)이라는 자료형이 존재.
 
 - 원시타입(primitive type) - number, string, boolean, null, undefined, symbol
-  - 자바스크립트에서 사용할 수 있는 데이터 및 정보의 가장 단순한 형태 (객체가 아닌 것들. 값 그 자체로 저장된 것)
+  - 자바스크립트에서 사용할 수 있는 데이터 및 정보의 가장 단순한 형태 (객체가 아닌 것들. 값 그 자체로 저장된 것, original type)
   - 변수에 할당될 때, 메모리 상에 고정된 크기로 저장됨
   - 해당 변수가 원시 데이터 값을 보관 (값이 복사됨)
   - 비교 시, 저장된 값을 비교
@@ -14,24 +14,40 @@
   - 변수에 할당될 때, 값이 직접 해당 변수에 저장될 수 없음 (변수에는 데이터에 대한 참조만 저장. 즉, 참조는 참조타입 데이터의 주소이지 해당 데이터의 값이 아님!)
   - 비교 시, 저장되어 있는 참조(메모리의 번지수)를 비교
 
-#### number
 
-: 다른 언어와는 달리(길이를 미리 정해줌), 자바스크립트에는 number가 하나임
 
-#### boolean
+#### 원시타입 종류
 
-- false - 0, null, undefined, NaN, ' '
+#### -number
+
+: 다른 언어와는 달리(길이를 미리 정해줌), 자바스크립트에는 number type이 하나임.
+
+#### -boolean
+
+- false - 0, null, undefined, NaN(망한 결과값. 말이 안되는 값), ' '
 - true - 다른 모든 값
 
-#### null
+#### -undefined
 
-: 빈 값. 변수에 값이 텅텅 비어지게 할당한 것. `let nothing = null`
+: 변수가 선언되었으나, 아직 할당되지 않음.  (아직 뭘 넣을지 안 정함)
 
-#### undefined
+```javascript
+let hello;
+console.log(hello === undefined)      // true
+console.log(hello === null)      	  // false
+```
 
-: 변수가 선언되었으나, 아직 할당되지 않음.
+#### -null
 
-#### symbol
+: 빈 값. 변수에 값이 텅텅 비어지게 할당한 것. (이 자체가 값이다!!) (아무 것도 담지 않기로 함)
+
+```javascript
+let hello;
+hello = null
+console.log(hello === null)           // true
+```
+
+#### -symbol
 
 : 고유한 식별자가 필요하거나, 동시 다발적으로 일어나는 코드에서 우선순위를 주고 싶을 때 사용
 
@@ -41,7 +57,7 @@
 
 *JS는 동적타이핑 언어이다. 변수의 타입을 선언하지 않아도, 런타임 때 변수의 타입이 자동으로 파악됨. 하나의 변수에 여러 타입의 값을 넣을 수 있음. (문제 발생 => 타입스크립트 사용)
 
-
+<br>
 
 ### 1. Call Stack
 
@@ -75,7 +91,7 @@ zero();							// 1. zero 함수 호출
 
 maximum call stack 제한이 있음.
 
-
+<br>
 
 ### 2. 변수 (var / let / const), scope
 
@@ -90,6 +106,8 @@ maximum call stack 제한이 있음.
 
 
 #### scope
+
+: 변수에 접근할 수 있는 범위. (한마디로 '너의 variable'이 존재하는가?)
 
 1) 함수 스코프 : 함수 내에서 선언된 변수만 그 지역변수가 되는 것. => 유일하게 벗어날 수 없는 스코프가 함수
 
@@ -155,9 +173,7 @@ maximum call stack 제한이 있음.
 
   **블록 스코프**이다.
 
-
-
-
+<br>
 
 ### 3. Event Loop
 
@@ -177,27 +193,27 @@ JS 가 non-blocking이기 때문에 브라우저가 다른 일을 할 때도 유
 
 (그림)
 
-- **Event loop** : 계속 반복해서 call stack과 queue 사이의 작업들을 확인하고, **call stack이 비워져 있으면**, queue에서 작업을 꺼내 call stack에 넣는다.
-- queue : 비동기 작업을 위해 작업을 담아둘 곳. 
+- **Event loop** : 계속 반복해서 call stack과 queue 사이의 작업들을 확인하고, **call stack이 비워져 있으면**, callback queue에서 작업을 꺼내 call stack에 넣는다.
+- callback queue : 비동기 작업을 위해 작업을 담아둘 곳. 
   - microtask queue -> animation frames -> task queue 순으로 진행
 
 ex. setTimeout()이 발생했을 때, 먼저 call stack에 올리고 -> web API에 호출(콜백 전달) -> call stack 에서 setTimeout()을 pop -> web API에서 예약된 시간이 되면, task queue에 해당 작업 올림 -> (주체: event loop) call stack이 비어있으면, 해당 작업을 call stack에 올림.
 
-
+<br>
 
 ### 4. Hoisting
 
-- : 끌어올리기. (변수의 정의가 그 범위에 따라 선언과 할당으로 분리되는 것.)
+: 끌어올리기. (변수의 정의가 그 범위에 따라 선언과 할당으로 분리되는 것.)
 
-  스코프 내부 어디서든 변수 선언은 최상위에 선언된 것처럼 행동!
+스코프 내부 어디서든 변수 선언은 최상위에 선언된 것처럼 행동!
 
-  `var`키워드로 선언된 모든 변수 선언은 호이스트된다.
+`var`키워드로 선언된 모든 변수 선언은 호이스트된다.
 
-  - 선언 : `var x;`이 부분이 끌어올려진다!
+- 선언 : `var x;`이 부분이 끌어올려진다!
 
-    ​           선언문은 항시 자바스크립트 엔진 구동시 가장 최우선으로 해석되므로 호이스팅됨.
+  ​           선언문은 항시 자바스크립트 엔진 구동시 가장 최우선으로 해석되므로 호이스팅됨.
 
-  - 할당 : `x = 10;` 할당 구문은 런타임 과정에서 이루어지기 때문에 호이스팅 되지 않는다.
+- 할당 : `x = 10;` 할당 구문은 런타임 과정에서 이루어지기 때문에 호이스팅 되지 않는다.
 
 ```javascript
 function getX() {
@@ -235,7 +251,7 @@ function foo = function() {
 
 `let`이나 `const`는 호이스팅을 지원하지 않는 것이 아니라, 여기에 변수가 선언되기 전에는 그 변수를 실행할 수 없다는 기능을 추가한 것이다!
 
-
+<br>
 
 ### 5. Closure
 
@@ -253,7 +269,7 @@ function foo = function() {
 - 정보 은닉 : private 변수를 만들고, 익명 함수에서 반환된 퍼블릭 함수를 통해서만 접근 가능
 - 캡슐화 : 고유의 클로저를 통한 변수의 다른 버전을 참조. (하나의 클로저에서 변수 값을 변경해도, 다른 클로저의 값에는 영향을 주지 않음)
 
-
+<br>
 
 ### 6. this
 
@@ -402,11 +418,11 @@ console.log(jun);  // 'junho', 30
 
 *apply, call은 함수를 **호출**할 때, this와 파라미터를 지정.
 
-
-
-
+<br>
 
 ### 7. 실행 컨텍스트
+
+: scope, hoisting, this, function, closure 등의 동작원리를 담고 있는 자바스크립트의 핵심원리
 
 #### 컨텍스트의 원칙
 
@@ -415,3 +431,368 @@ console.log(jun);  // 'junho', 30
 - 컨텍스트 생성 후, 함수가 실행됨. (사용되는 변수들은 변수객체 안에서 값을 찾고, 없다면 scope chain을 따라 올라가며 찾는다)
 - 함수 실행이 마무리되면, 해당 컨텍스트는 사라진다. (클로저 제외) 페이지가 종료되면 전역 컨텍스트가 사라짐
 
+<br>
+
+### 8. Promise
+
+#### -callback
+
+: 나중에 실행되는 코드! (비동기적)
+
+```javascript
+// event
+btn.addEventListener('click', () => {
+    console.log('btn');
+});
+
+// timer
+console.log('시작');
+setTimeout(() => {
+    console.log('hello');
+}, 0);
+console.log('끝');
+
+// 시작 -> 끝 -> hello (setTimeout은 JS내에서 연산되는 것이 아니라, web API단에서 실행되기 때문. 0초 뒤 실행되는 것이 아니라, 0초 뒤에 task큐로 보내는 것!)
+```
+
+=> 비동기 함수간의 의존성을 처리할 때 콜백을 사용하면, 유지보수하기 힘들다.
+
+
+
+#### -promise
+
+: 비동기를 간편하게 처리할 수 있도록 도와주는 object로, 콜백 중첩을 해결하기 위해 등장한 패턴. 
+
+"리턴값을 지금 사용하든 아니든, 이건 비동기 함수로 약속!"
+
+정해진 장시간의 기능을 수행하고 나서 정상적으로 기능이 수행되어졌다면, 성공 메시지와 함께 결과값을 전달해줌. 에러 발생 시 에러 전달.
+
+- state : 수행 중인지, 완료되어 성공/실패 상태
+
+  - pending - promise가 만들어져서, 우리가 지정한 operation이 수행 중일 때
+  - fullfilled
+  - rejected
+
+- producer : 정보 제공자 (promise object)
+
+  - promise는 class라서 new로 object 생성가능
+
+  - executor라는 콜백함수 안에 두 개의 콜백함수(resolve, reject) 전달
+
+    promise가 생성되는 순간 콜백함수인 executor가 실행됨 (불필요한 network 작업 주의)
+
+    - resolve - 기능을 정상적을 수행해서 최종 값을 전달
+    - reject - 문제가 생기면 처리할 내용
+
+  ```javascript
+  const promise = new Promise((resolve, reject) => {
+      // doing some heavy work (network, read files)
+      console.log('doing smth...');
+      setTimeout(() => {
+          resolve('suhyeon');		// 성공 시
+          reject(new Error('no network'));	// 에러 시
+      }, 2000);
+  });
+  ```
+
+- consumer : 정보 소비자
+
+  - then - promise가 정상적으로 수행되어 최종적으로 resolve의 값이 value로 들어옴
+
+    ​			(then은 값/promise를 바로 받아옴)
+
+  - catch - 에러 시 수행할 내용
+
+  - finally - 성공/실패와 상관없이 마지막으로 실행됨
+
+  ```javascript
+  promise
+  .then(value => {
+      console.log(value); 		// suhyeon
+  });
+  .catch(error => {
+      console.log(error);
+  });
+  .finally(() => {
+      console.log('finally');		// 무조건 수행됨
+  });
+  ```
+
+- Promise chaining
+
+  ```javascript
+  const fetchNumber = new Promise((resolve, reject) => {
+      setTimeout(() => resolve(1), 1000);
+  });
+  fetchNumber
+  .then(num => num * 2)
+  .then(num => num * 3)
+  .then(num => {
+      return new Promise((resolve, reject) => {
+          setTimeout(() => resolve(num - 1), 1000);
+      });
+  })
+  .then(num => console.log(num));
+  ```
+
+- Error Handling
+
+  ```javascript
+  const getHen = () =>
+  	new Promise((resolve, reject) => {
+          setTimeout(() => resolve('암탉'), 1000);
+      });
+  const getEgg = hen =>
+  	new Promise((resolve, reject) => {
+          //setTimeout(() => resolve(`${hen} => 달걀`), 1000);
+          setTimeout(() => reject(new Error(`${hen} => 달걀`)), 1000);
+      });
+  const cook = egg =>
+  	new Promise((resolve, reject) => {
+          setTimeout(() => resolve(`${egg} => 후라이`), 1000);
+      });
+  
+  getHen()
+  .then(getEgg)
+  .catch(error => {
+      return '빵';			// 빵 => 후라이  // 위에서 발생하는 에러를 바로 잡기
+  })
+  .then(cook)
+  .then(console.log);		// 암탉 => 달걀 => 후라이
+  .catch(console.log);
+  ```
+
+  
+
+#### 장점
+
+- 비동기 작업들을 컨트롤하기 수월해진다. 
+  - 비동기 메서드에서 마치 동기 메서드처럼 값을 반환!
+  - 비동기 작업을 객체로 다룸으로써 좀 더 유연한 비동기 처리가 가능하다.
+- 예외처리에 대한 구조가 존재하므로 오류 처리 등에 대해 보다 가시적으로 관리할 수 있다.
+
+
+
+#### 동작과정 요약
+
+- Promise 객체가 생성되는 직후부터 resolve나 reject가 호출되기 전까지 => pending
+- 비동기 작업을 마친 뒤, 결과물을 약속대로 잘 줄 수 있다면 => resolve 함수 호출
+- 실패했다면 => reject 함수 호출
+- 호출 시, Promise 객체가 리턴됨
+- 비동기 작업이 정상적으로 완료되었을 때 `.then`을 호출 (첫번째 파라미터에는 성공시 호출할 함수를, 두번째 파라미터에는 실패시 호출할 함수 선언) 또는 `.catch`로 에러작업 설정
+
+<br>
+
+### 9. async / await
+
+: promise 기반의 비동기 코드 작성법으로, promise를 좀 더 간결/간편하고, 동기적으로 실행되는 것처럼 보이게 해준다.
+
+(기존에 존재하는 것 위에 살짝 덧붙인 syntactic sugar.)
+
+무조건 async await으로 대체해야 하는 것은 아니다.
+
+"promise이기만 하면, 우리는 기다릴 수 있어"
+
+- function 키워드 앞에 `async`를 붙여준다. (async를 함수 앞에 쓰면, 코드 블럭이 자동으로 promise로 바뀌게 된다!!)
+-  function 내부의 promise를 반환하는 비동기 처리 함수 앞에 `await`를 붙여주면 된다. 
+- `await`는 promise의 값이 사용 가능할 때까지 메소드의 실행을 일시중지 시킨다.
+- (모든 async함수는 promise를 리턴하고, 모든 await함수는 일반적으로 promise가 된다)
+
+
+
+#### 장점
+
+- promise보다 비동기 코드의 겉모습을 더 깔끔하게 한다!
+- 동기와 비동기 에러 모두를 `try/catch`를 통해 처리할 수 있게 한다
+
+```javascript
+// promise로 접근
+function getUser() {
+    return getUsers()
+        .then(users => {
+          return users.name;
+    })
+        .catch(error => {
+          return {name: 'default user'};
+    });
+}
+
+// async await으로 접근
+async function getUser() {
+    try {
+        let users = await getUsers();
+        return users.name;
+    } catch (error) {
+        return {name: 'default user'};
+    }
+}
+
+// all : promise 배열들을 전달하면, 모든 promise들이 병렬적으로 수행되는 것을 모아줌. (배열 형태로 promise를 전달!)
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function getApple() {
+    await delay(3000);			// delay가 끝날 때까지 기다려준다.
+    return '사과';
+}
+
+async function getBanan() {
+    await delay(3000);			// delay가 끝날 때까지 기다려준다.
+    return '바나나';
+}
+
+function pickAllFruits() {
+    return Promise.all([getApple(), getBanan()])
+    .then(fruits => fruits.join(' + '));
+}
+pickAllFruits().then(console.log);
+
+// race (가장 먼저 실행된 promise 값만 출력)
+function pickOnlyOne() {
+    return Promise.race([getApple(), getBanan()]);
+}
+pickOnlyOne().then(console.log);		// 바나나 만 출력
+```
+
+<br>
+
+### 10. ES6에 추가된 스펙
+
+0. const / let (var는 이제 사용하지 않음)
+
+1. 리터럴 문법
+2. 객체 비구조화 할당
+3. 객체 프로퍼티 초기화 단축 : 객체 프로퍼티 이름이 로컬 변수 이름과 같으면 생략 가능.
+4. for... of... : `for(let name of ppl)`
+5. 스프레드 문법
+6. Rest parameter
+7. Arrow function
+8. Trailing Commas : 데이터가 늘어날 경우를 대비해, 객체 마지막 값 뒤에 `,`를 붙일 수 있다.
+9. Default Params 세팅 : `(name = defaultValue)` 
+10. includes 메서드
+11. map, set
+
+<br>
+
+### 11. Arrow Function
+
+- 이름이 없다.
+
+  ```javascript
+  // 일반 함수
+  function hi () {
+  
+  }
+  
+  // 화살표 함수 
+  () => {
+  
+  }
+  ```
+
+  
+
+- `arguments`가 없다.
+
+  ```javascript
+  // #일반 함수에는 배열처럼 접근할 수 있는 arguments라는 속성이 존재
+  const myFun = function() {
+      console.log(arguments);
+  }
+  
+  myFun(1, 2, 3, 4);  // Arguments(4) [1, 2, 3, 4]
+  
+  // #화살표 함수에는 arguments가 없음.
+  const myFun = () => {
+      console.log(arguments);
+  }
+  
+  myFun(1, 2, 3, 4);  // 에러
+  
+  // #해결하기 (일반 함수로 감싸주기)
+  function outter() {
+      const myFun = () => {
+      console.log(arguments);
+   }
+   myFun();
+  }
+  
+  outter(1, 2, 3, 4);  // Arguments(4) [1, 2, 3, 4]
+  // myFun에는 arguments가 없기 때문에, 화살표 함수가 정의된 outter함수가 실행될 때의 스코프를 참조하게 된다.
+  
+  // #전개 연산자
+  const myFun = (...args) => {
+      console.log(args);
+  }
+  
+  myFun(1, 2, 3);  // (3) [1, 2, 3] 실제 배열!
+  ```
+
+  
+
+- `this`가 없다.
+
+  ```javascript
+  // #일반 함수
+  const myObj = {
+      count: 3,
+      setCounter: function() {
+          console.log(this.count);
+          btn.addEventListener('click', function() {
+              console.log(this);
+          });
+      }
+  };
+  
+  myObj.setCounter();  // 3
+  // btn 클릭 시 => <button id="btn">버튼</button>
+  
+  btn.addEventListener('click', (function() {
+      console.log(this);
+  }).bind(this));
+  // btn 클릭 시 => {count: 0, setCounter: f}
+  
+  // #화살표 함수
+  btn.addEventListener('click', () => {
+      console.log(this);
+  });
+  // btn 클릭 시 => this가 자신 쪽에 없기 때문에 그 밖에서 찾는다. {count: 0, setCounter: f}
+  
+  btn.addEventListener('click', () => {
+      console.log(this.count++);
+  });
+  // btn 클릭 시 => this가 자신 쪽에 없기 때문에 그 밖에서 찾는다. 1
+  
+  // #생성자 함수를 쓸 수 없음 (프로토타입 존재X)
+  const MyClass = () => {
+      
+  }
+  
+  new MyClass();  // 에러
+  ```
+
+
+<br>
+
+### 12. JS Engine 
+
+: 자바스크립트 코드를 해석하고 실행시켜주는 프로그램 혹은 인터프리터. (JS 엔진은 인터프리터로 구현될 수도, JIT 컴파일러로도 구현될 수도 있다.) **가능한 짧은 시간 내에 가장 최적화된 코드를 생성하는 것**이 목표이다. 
+
+ JS 엔진은 크게 Heap 이라는 메모리를 관리하는 영역과, 실행할 태스크를 관리하는 Stack 영역으로 구분된다.
+
+자바스크립트 엔진은 ECMAscript라고도 불리며, (특정 버전의 ECMAscript를 구현하기 때문에) ECMAscript가 발전하는 만큼 엔진도 발전한다. 웹 브라우저마다 사용하는 엔진이 다른데, 크롬에서는 구글의 V8 엔진을 사용한다.
+
+ V8은 웹 브라우저 내부에서 자바스크립트 수행 속도의 개선을 목표로 처음 고안되었다. 속도 향상을 위해 V8은 인터프리터를 사용하는 대신, 자바스크립트 코드를 더 효율적인 머신 코드로 번역한다. **JIT(저스트인타임)** 컴파일러를 구현함으로써, 코드 실행 시에 자바스크립트 코드를 **머신 코드로 컴파일**하는데, 이는 스파이더몽키나 리노와 같은 현대적인 다른 자바스크립트 엔진에서도 마찬가지이다. 주된 차이는 V8은 바이트코드와 같은 중간 코드를 생산하지 않는다는 점이다.
+
+<br>
+
+### 13. AMP(Accelerated Mobile Pages)
+
+: 모바일 가속화 페이지. 모바일 환경에서 빠른 속도로 페이지를 렌더링하여 제공한다.
+
+페이지 속도 개선, 사용자 만족도 향상
+
+
+
++**Wireshark** : 네트워크 패킷을 캡쳐하고 분석하는 오픈소스 도구. 해킹뿐만 아니라 보안 취약점 분석, 보안 컨설팅 등 여러 분야에서 폭넓게 사용된다.
