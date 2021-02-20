@@ -13,7 +13,7 @@
   - O(n) : for, while문
   - O(n^2) : for문이 두 번
 
-
+<br>
 
 ### 1. 배열 (Array)
 
@@ -24,7 +24,7 @@
 - **인덱스를 통해 해당 원소에 빠른 접근 가능** (random access가능 => O(1))
 - 삽입/삭제가 쉽지 않다 (해당 원소에 접근해 작업한 뒤, `shift`로 인덱스 정리까지 해야하므로 => O(n))
 
-
+<br>
 
 ### 2. 링크드 리스트 (Linked List)
 
@@ -129,7 +129,7 @@ def delete(self, data):
                 node = node.next
 ```
 
-
+<br>
 
 #### 더블 링크드 리스트
 
@@ -169,7 +169,7 @@ class NodeMgmt:
             node = node.next
 ```
 
-
+<br>
 
 ### 3. Stack
 
@@ -230,9 +230,7 @@ for index in range(10):
 pop()  #9
 ```
 
-
-
-
+<br>
 
 ### 4. Queue
 
@@ -278,9 +276,7 @@ def dequeue():
     return data
 ```
 
-
-
-
+<br>
 
 ### 5. Hash Table
 
@@ -439,3 +435,199 @@ def read_data(data):
 - 시간 복잡도
   - 일반적인 경우(충돌X) => O(1)
   - 최악의 경우(모두 충돌) => O(n)
+
+<br>
+
+### 6. Tree
+
+: **노드와 브랜치를 이용해서, 사이클을 이루지 않도록 구성한 데이터 구조.**
+
+실제로 이진 트리 형태의 탐색 알고리즘 구현을 위해 많이 사용됨.
+
+
+
+#### -용어
+
+- Node : 트리에서 데이터를 저장하는 기본 요소 (데이터와 연결된 다른 노드에 대한 브랜치 정보 포함)
+- Level : 최상위 노드를 level 0으로 하였을 때, 하위 브랜치로 연결된 노드의 깊이를 나타냄.
+- Root node / Leaf node
+- Depth : 트리에서 노드가 가질 수 있는 최대 level
+
+
+
+#### 이진트리
+
+: 노드의 최대 브랜치가 2인 트리
+
+
+
+#### 이진 탐색 트리 (Binary Search Tree, BST)
+
+: 이진 트리에 다음과 같은 추가적인 조건이 있는 트리. 
+
+왼쪽 노드는 해당 노드보다 작은 값, 오른쪽 노드는 해당 노드보다 큰 값을 가지고 있음
+
+**이진탐색과 연결리스트를 결합한 형태**로써 **이진탐색의 효율적 탐색능력 + 연결리스트의 입출력의 용이함을 결합**하여 고안된 자료구조의 방법
+
+- 주요 용도 - 데이터 검색
+
+- 장점 - **탐색 속도를 개선**할 수 있다. (한번 실행시마다, 50%의 실행 시간을 단축)
+
+- 단점 - 평균 시간 복잡도는 **O(logn)**이지만, 이는 트리가 균형잡혀 있을 때의 평균 시간 복잡도이며, 
+
+  순차적 크기를 가진 데이터가 들어온다면, **최악의 경우 링크드 리스트와 동일한 성능**을 보여줌 O(n)
+
+
+
+```python
+# 노드 클래스 만들기 (링크드 리스트로)
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+        
+# 이진 탐색 트리에 데이터 넣기
+class NodeMgmt:
+    def __init__(self, head):
+        self.head = head
+        
+    def insert(self, value):
+        self.current_node = self.head
+        while True:
+            if value < self.current_node.value:
+                if self.current_node.left != None: #노드의 왼쪽 브랜치가 있다면
+                    self.current_node = self.current_node.left # 비교대상 교체
+                else:
+                    self.current_node.left = Node(value)
+                    break
+            else:
+                if self.current_node.right != None:
+                    self.current_node = self.current_node.right
+                else:
+                    self.current_node.right = Node(value)
+                    break
+       
+# 이진 탐색 트리 탐색
+def search(self, value):
+    self.current_node = self.head
+    while self.current_code:
+        if self.current_node.value == value:
+            return True
+        elif value < self.current_node.value:
+            self.current_node = self.current_node.left
+        else:
+            self.current_node = self.current_node.right
+    return False
+```
+
+#### 노드 삭제하기
+
+1. Leaf node 삭제 : 삭제할 노드의 parent node가 삭제할 노드를 가리키지 않도록 한다.
+2. Child node가 하나일 때 : 삭제할 노드의 parent node가 삭제할 노드의 child node를 가리키지 않도록 한다.
+3. Child node가 두개일 때 : 삭제할 노드의 오른쪽 자식 중, 가장 작은 값을 삭제할 노드의 parent node가 가리키도록 한다.
+
+#### 시간 복잡도
+
+- depth를 h라고 표기한다면, **O(h)**
+- **n개의 노드**를 가진다면, h = log2^n에 가까우므로, 시간 복잡도는 **O(logn)**
+- **한번 실행시마다, 50%의 실행 시간을 단축**시킬 수 있다.
+
+<br>
+
+### 7. 힙(Heap)
+
+: 데이터에서 최대값과 최소값을 빠르게 찾기 위해 고안된 완전 이진 트리(complete binary tree).
+
+***완전 이진 트리** ) 노드를 삽입할 때, **최하단 왼쪽 노드부터 차례대로 삽입**하는 트리.
+
+
+
+#### 힙을 사용하는 이유
+
+- 배열에 데이터를 넣고 최대값/최소값을 찾으려면 O(n)이 걸림
+- 반면, 힙에 데이터를 넣고 최대값/최소값을 찾으면 O(logn)이 걸림
+- 우선순위 큐와 같이 **최대값/최소값을 빠르게 찾아야 하는 자료구조 및 알고리즘 구현 등에 활용**됨
+
+
+
+#### 힙 구조
+
+- 최대 힙 : 최대값을 구하기 위한 구조. 각 노드의 값은 해당 노드의 자식 노드가 가진 값보다 크거나 같다.
+- 최소 힙 : 최소값을 구하기 위한 구조. 각 노드의 값은 해당 노드의 자식 노드가 가진 값보다 작거나 같다.
+- 완전 이진 트리 형태를 가짐
+
+
+
+#### 힙 vs 이진 탐색 트리
+
+- 공통점 : 모두 이진 트리
+- 차이점
+  - 힙은 각 노드의 값이 자식노드보다 크거나/작다
+  - 이진탐색 트리의 노드 값 크기 순서: 왼쪽 자식노드 > 부모노드 > 오른쪽 자식노드
+  - 힙은 이진탐색 트리의 조건인 자식노드에서 작은 값은 왼쪽, 큰 값은 오른쪽이라는 조건 없음
+  - 이진탐색 트리는 탐색을 위한 구조, 힙은 최대/최소값 검색을 위한 구조 중 하나!
+
+
+
+#### 힙 동작
+
+- 힙에 데이터 삽입하기
+  - 기본) 힙은 완전 이진 트리이므로, 삽입할 노드는 기본적으로 왼쪽 최하단부 노드부터 채워지는 형태로 삽입.
+  -  삽입할 데이터가 힙의 루트 노드보다 클 경우(최대 힙에서)
+    - 먼저 삽입된 데이터는 완전 이진 트리 구조에 맞추어, 최하단부 왼쪽 노드부터 채워짐
+    - 채워진 노드 위치에서, 부모 노드보다 값이 클 경우, 부모 노드와 위치를 바꿔주는 작업을 반복 (swap)
+- 힙의 데이터 삭제하기
+  - 보통 삭제는 최상단 노드를 삭제하는 것이 일반적
+    - 힙의 용도는 최대/최소값을 루트 노드에 놓고, 뽑아 쓰는 것이 목적이기 때문
+  - 상단의 데이터 삭제 시 => 최하단부 왼쪽에 위치한 노드 (일반적으로 가장 마지막에 추가한 노드)를 루트 노드로 이동
+  - 루트 노드의 값이 child node보다 작을 경우, 루트 노드의 child node 중 가장 큰 값을 가진 노드와 루트 노드 위치를 바꿔주는 역할을 반복함(swap)
+
+
+
+#### 힙 구현
+
+: 일반적으로 힙 구현 시, 배열 자료구조를 활용함
+
+```python
+class Heap:
+    def __init__(self, data):
+        self.heap_array = list()
+        self.heap_array.append(None)
+        self.heap_array.append(data)
+        
+    def move_up(self, inserted_idx): #옮긴 위치가 루트노드인지/맞는 위치인지 판단
+        if inserted_idx <= 1:
+            return False
+        
+        parent_idx = inserted_idx // 2
+        if self.heap_array[inserted_idx] > self.heap_array[parent_idx]:
+            return True
+        else:
+            return False
+            
+    def insert(self, data):
+        if len(self.heap_array) == 0: #루트 노드가 없을 때
+            self.heap_array.append(None)
+            self.heap_array.append(data)
+            return True
+        
+        self.heap_array.append(data)
+        
+        inserted_idx = len(self.heap_array)-1
+        
+        while self.move_up(inserted_idx):
+            parent_idx = inserted_idx // 2
+            self.heap_array[inserted_idx], self.heap_array[parent_idx] = self.heap_array[parent_idx], self.heap_array[inserted_idx]
+            inserted_idx = parent_idx
+        
+        return True
+```
+
+
+
+#### 힙 시간 복잡도
+
+- depth(트리의 높이)를 h라고 표기한다면,
+- n개의 노드를 가지는 heap에 데이터 삽입/삭제 시, 최악의 경우 루트노드에서 leaf노드까지 비교해야 하므로, (h = log2^n에 가까우므로) 시간 복잡도는 O(logn)
+  - 한번 실행시마다, 50%의 실행 시간을 단축시킬 수 있음.
