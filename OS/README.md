@@ -2861,3 +2861,299 @@ CPU가 논리주소를 주면, s(세그먼트) / d(오프셋) 두 부분으로 �
   - external fragmentation 발생
 
   *segment의 길이가 동일하지 않으므로 가변분할 방식에서와 동일한 문제점들이 발생
+  
+  
+
+**Segmentation with Paging**
+
+: segmentation과 paging 기법의 장점을 취한 기법. (segment 하나가 여러 개의 page로 구성됨)
+
+- pure segmentation과의 차이점
+  - segment-table entry가 segment의 base address를 가지고 있는 것이 아니라, segment를 구성하는 page table의 base address를 가지고 있음. (segment -> page address -> physical address)
+
+![image-20210215155802222](C:\Users\multicampus\AppData\Roaming\Typora\typora-user-images\image-20210215155802222.png)
+
+ 
+
+
+
+## Ch9. Virtual Memory
+
+(해당 챕터에서는 paging 메모리 관리 기법을 사용하는 것으로 가정.)
+
+**Demand Paging**
+
+: 요청이 있으면 그 페이지를 메모리에 올리겠다.
+
+- 실제로 필요할 때 page를 메모리에 올리는 것
+
+  - I/O 양의 감소
+  - Memory 사용량 감소
+  - 빠른 응답 시간
+  - 더 많은 사용자 수용
+
+- valid/invalid의 사용
+
+  <img src="C:\Users\multicampus\AppData\Roaming\Typora\typora-user-images\image-20210215170501820.png" alt="image-20210215170501820" style="zoom:80%;" />
+
+  - invalid의 의미
+    - 사용되지 않는 주소 영역인 경우
+    - 페이지가 물리적 메모리에 없는 경우
+  - 처음에는 모든 page entry가 invalid로 초기화
+  - address translation 시에 invalid bit이 set되어 있으면 => **page fault** (요청한 페이지가 메모리에 없는 경우) CPU가 자동으로 OS에게 넘어가게 된다.(trap)
+
+
+
+**Page Fault**
+
+<img src="C:\Users\multicampus\AppData\Roaming\Typora\typora-user-images\image-20210215171301962.png" alt="image-20210215171301962" style="zoom:80%;" />
+
+- invalid page를 접근하면 **MMU가 trap을 발생시킴 (page fault trap)**
+- **Kernel mode**로 들어가서 page fault handler가 실행됨
+- 다음과 같은 순서로 page fault를 처리
+  - 1) Invalid reference? (bad address, protection violation) => abort process
+  - 2) Get an empty page frame (없으면 뺏어온다: **replace**)
+  - 3) 해당 페이지를 disk에서 memory로 읽어온다
+    - 1) disk I/O가 끝나기까지 이 프로세스는 **CPU를 선점당함 (block)**
+    - 2) Disk read가 끝나면 page tables entry 기록, valid/invalid bit = **"valid"**
+    - 3) **ready queue**에 process를 insert -> dispatch later
+  - 4) 이 프로세스가 CPU를 잡고 다시 running
+  - 5) 아까 중단되었던 instruction을 재개
+
+
+
+**Performance of Demand Paging**
+
+: page fault가 나면 overhead가 굉장히 커짐.
+
+- Page Fault Rate ) 0 <= p <= 1.0
+
+  - if p = 0, no page faults
+  - if p = 1, every reference is fault
+
+- Effective Access Time
+
+  = (1-p) * memory access + **p(OS&HW page fault overhead + [swap page out if needed] + swap page in + OS&HW restart overhead)**
+
+
+
+**Free frame이 없는 경우**
+
+: page fault가 낮아지도록 page replacement 알고리즘을 설계해야 함.
+
+- Page replacement
+  - 어떤 frame을 빼앗아올지 결정해야 함
+  - 곧바로 사용되지 않을 page를 쫓아내는 것이 좋음
+  - 동일 페이지가 여러 번 메모리에서 쫓겨났다가 다시 들어올 수 있음
+- Replacement Algorithm
+  - page-fault rate을 최소화하는 것이 목표
+  - 알고리즘의 평가
+    - 주어진 page reference string에 대해 page fault를 얼마나 내는지 조사
+  - reference string의 예
+    - 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5
+
+
+
+**Optimal Algorithm**
+
+: 가장 좋은 replacement 알고리즘. (page fault를 가장 적게 함. 미래의 참조를 알고 있다고 가정)
+
+- MIN(OPT) : 가장 먼 미래에 참조되는 page를 replace
+
+- 4 frames example 
+
+  <img src="C:\Users\multicampus\AppData\Roaming\Typora\typora-user-images\image-20210215172222613.png" alt="image-20210215172222613" style="zoom:80%;" />
+
+- 미래의 참조를 어떻게 아는가?
+
+  - Offline algorithm (실생활에 사용 불가)
+
+- 다른 알고리즘의 성능에 대한 upper bound 제공 (최적값의 참고용으로 사용)
+
+  - Belady's optimal algorithm, MIN, OPT 등으로 불림
+
+
+
+(미래를 모르니 과거를 보며 알고리즘 설계..)
+
+**FIFO(First In First Out) Algorithm**
+
+- FIFO : 먼저 들어온 것을 먼저 내쫓음
+
+<img src="C:\Users\multicampus\AppData\Roaming\Typora\typora-user-images\image-20210215172610158.png" alt="image-20210215172610158" style="zoom:80%;" />
+
+- FIFO Anomaly (Belady's Anomaly) 나쁜성질
+  - more frames이  less page faults를 의미하지 않음. (페이지 수를 늘려주면 원래 성능이 좋아지는게 일반적인데..)
+
+
+
+**LRU(Least Recently Used)  Algorithm**
+
+- LRU : 가장 오래 전에 참조된 것을 지움
+
+<img src="C:\Users\multicampus\AppData\Roaming\Typora\typora-user-images\image-20210215172850271.png" alt="image-20210215172850271" style="zoom:80%;" />
+
+
+
+**LFU(Least Frequently Used) Algorithm**
+
+- LFU : 참조 횟수 (reference count)가 가장 적은 페이지를 지움
+  - 최저 참조 횟수인 page가 여럿 있는 경우
+    - LFU알고리즘 자체에서는 여러 page 중 임의로 선정
+    - 성능 향상을 위해, 가장 오래 전에 참조된 page를 지우게 구현 가능
+  - 장단점
+    - LRU처럼 직전 참조 시점만 보는 것이 아니라 장기적인 시간 규모를 보기 때문에, page의 인기도를 좀 더 정확히 반영할 수 있음
+    - 참조 시점의 최근성을 반영하지 못함
+    - LRU보다 구현이 복잡
+
+
+
+**LRU vs LFU**
+
+<img src="C:\Users\multicampus\AppData\Roaming\Typora\typora-user-images\image-20210215173405649.png" alt="image-20210215173405649" style="zoom:80%;" />
+
+LRU는 참조 횟수를 고려하지 않음. LFU는 이제 막 참조되는 애를 쫓아내버릴수 있음(신입).
+
+
+
+**LRU와 LFU알고리즘의 구현**
+
+(아래로 갈수록 우선순위 높아짐)
+
+<img src="C:\Users\multicampus\AppData\Roaming\Typora\typora-user-images\image-20210215173758563.png" alt="image-20210215173758563" style="zoom: 80%;" /><img src="C:\Users\multicampus\AppData\Roaming\Typora\typora-user-images\image-20210215174015662.png" alt="image-20210215174015662" style="zoom: 80%;" />
+
+- LRU ) 새 참조는 무조건 우선순위가 높아짐 (링크드 리스트로 구현)
+- LFU )  새 참조는 아래로 내려가면서 빈도 수를 비교해 우선순위가 결정됨 (min-heap으로 구현)
+
+
+
+
+
+**다양한 캐싱 환경**
+
+- 캐싱 기법
+  - 한정된 빠른 공간(=캐시)에 요청된 데이터를 저장해 두었다가, 후속 요청 시 캐시로부터 직접 서비스하는 방식
+  - paging system 외에도 cache memory, buffer caching, web caching 등 다양한 분야에서 사용
+- 캐시 운영의 시간 제약
+  - 교체 알고리즘에서 삭제할 항목을 결정하는 일에 지나치게 많은 시간이 걸리는 경우, 실제 시스템에서 사용할 수 없음
+  - Buffer caching이나 web caching의 경우
+    - O(1)에서 O(log n)정도까지 허용 
+  - Paging system인 경우 (OS는 반쪽짜리 정보만 알 수 있다)
+    - page fault인 경우에만 OS가 관여함
+    - 페이지가 이미 메모리에 존재하는 경우, 참조시각 등의 정보를 OS가 알 수 없음
+    - O(1)인 LRU의 list 조작조차 불가능
+
+
+
+**Clock Algorithm**
+
+<img src="C:\Users\multicampus\AppData\Roaming\Typora\typora-user-images\image-20210215222311881.png" alt="image-20210215222311881" style="zoom:67%;" />
+
+- LRU의 근사 알고리즘 (Second chance algorithm, NUR - Not Used Recently / NRU - Not Recentrly Used) : 오랫동안 참조가 안된 페이지를 쫓아냄 (한 번 돌아올 동안에 reference bit가 1이면 한 번 더 기회를 주고, 0으로 바꿈. 돌다가 0을 만나면 쫓아냄)
+- Reference bit ) 1이면 최근에 참조되었다는 뜻 (HW가 0->1로, OS가 1->0로 만듦)
+- Reference bit을 사용해서 교체 대상 페이지 선정 (circular list)
+- reference bit가 0인 것을 찾을 때까지 포인터를 하나씩 앞으로 이동
+- 포인터 이동하는 중에 reference bit 1을 모두 0으로 바꿈
+- Reference bit이 0인 것을 찾으면, 그 페이지를 교체
+- 한 바퀴 되돌아와서도(=second chance) 0이면, 그때에는 replace 당함
+- 자주 사용되는 페이지라면 second chance가 올 때 1
+- Clock algorithm 개선
+  - reference bit과 modified bit (dirty bit)을 함께 사용
+  - reference bit = 1 ) 최근에 참조된 페이지
+  - modified bit = 1 ) 최근에 변경된 페이지 (I/O를 동반하는 페이지) 이게 1인걸 쫓아내려면, swap device에 써주고 쫓아내야함 (가능하면 일을 덜 하기 위해 0인걸 쫓아내려함..)
+
+
+
+**Page Frame의 Allocation**
+
+- Allocation problem : 각 process에 얼마만큼의 page frame을 할당할 것인가?
+- Allocation의 필요성
+  - 메모리 참조 명령어 수행 시, 명령어, 데이터 등 여러 페이지 동시 참조
+    - 명령어 수행을 위해 최소한 할당되어야 하는 frame의 수가 있음
+  - Loop를 구성하는 page들은 한꺼번에 allocate되는 것이 유리함
+    - 최소한의 allocation이 없으면 매 loop마다 page fault
+- Allocation Scheme
+  - Equal allocation : 모든 프로세스에 똑같은 갯수 할당
+  - Proportional allocation : 프로세스 크기에 비례하여 할당
+  - Priority allocation : 프로세스의 priority에 따라 다르게 할당
+
+
+
+**Global vs. Local Replacement**
+
+- **Global replacement**
+  - Replace 시, **다른 process에 할당된 frame을 빼앗아 올 수 있다**
+  - Process별 할당량을 조절하는 또다른 방법임
+  - FIFO, LRU, LFU 등의 알고리즘을 global replacement로 사용시에 해당
+  - Working set, PFF 알고리즘 사용
+- **Local replacement**
+  - **자신에게 할당된 frame 내에서만 replacement**
+  - FIFO, LRU, LFU 등의 알고리즘을 process 별로 운영시
+
+
+
+**Thrashing**
+
+<img src="C:\Users\multicampus\AppData\Roaming\Typora\typora-user-images\image-20210215223655528.png" alt="image-20210215223655528" style="zoom:67%;" />
+
+- 프로세스의 원활한 수행에 필요한 최소한의 page frame 수를 할당받지 못한 경우 발생 (각 프로세스마다 메모리 할당량이 너어무 작아지게 될 때)
+- Page fault rate가 매우 높아짐
+- CPU utilization이 낮아짐 (자꾸 page fault가 나니까 CPU가 할일이 없어짐)
+- OS는 MPD(Multiprogramming degree)를 높여야 한다고 판단
+- 또다른 프로세스가 시스템에 추가됨 (higher MPD)
+- 프로세스 당 할당된 frame의 수가 더욱 감소 (악순환...) => working set을 메모리에 보장X
+- 프로세스는 page의 swap in / swap out으로 매우 바쁨 (ㅇㅅㅇ)
+- 대부분의 시간에 CPU는 한가함
+- low throughput
+
+
+
+**Working-set Model**
+
+- Locality of reference
+  - 프로세스는 특정 시간동안 일정 장소만을 집중적으로 참조한다.
+  - 집중적으로 참조되는 해당 page들의 집합을 locality set이라 함
+- Working-set Model
+  - Locality에 기반하여 프로세스가 일정 시간동안 원활하게 수행되기 위해, 한꺼번에 메모리에 올라와 있어야 하는 page들의 집합을 Working set이라 정의함
+  - Working set 모델에서는 process의 working set전체가 메모리에 올라와 있어야 수행되고, 그렇지 않을 경우, 모든 frame을 반납한 후, swap out(suspend). (구차하지 않고 쿨함..)
+  - Thrashing을 방지함
+  - Multiprogramming degree를 결정함
+
+
+
+**Working-Set Algorithm**
+
+- Working set의 결정
+  - Working set window를 통해 알아냄 (과거의 것)
+  - window size가 델타인 경우,
+    - 시각 tj에서의 working set WS(tj)
+      - Time interval사이에 참조된 서로 다른 페이지들의 집합
+    - Working set에 속한 page는 메모리에 유지, 속하지 않은 것은 버림 (즉, 참조된 후, 델타 시간 동안 해당 page를 메모리에 유지한 후 버림)
+
+
+
+**PFF(Page-Fault Frequency) Scheme**
+
+<img src="C:\Users\multicampus\AppData\Roaming\Typora\typora-user-images\image-20210215224725247.png" alt="image-20210215224725247" style="zoom:80%;" />
+
+: page fault의 빈도를 조사해서, 빈도가 높으면 page frame을 더 할당한다.
+
+- page-fault rate의 상한값과 하한값을 둔다
+  - page fault rate이 상한값을 넘으면 frame을 더 할당한다.
+  - page fault rate이 하한값 이하면, 할당 frame 수를 줄인다.
+- 빈 frame이 없으면 일부 프로세스를 swap out
+
+
+
+**Page Size의 결정**
+
+- Page size를 감소시키면,
+  - 페이지 수 증가
+  - 페이지 테이블 크기 증가
+  - Internal fragmentation 감소
+  - Disk transfer의 효율성 감소 (디스크 헤드가 이동하는 seek시간이 길어지므로..)
+    - Seek/rotation vs. transfer
+  - 필요한 정보만 메모리에 올라와 메모리 이용이 효율적
+    - Locality의 활용 측면에서는 좋지 않음
+- Trend
+  - Larger page size
