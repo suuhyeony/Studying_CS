@@ -16,7 +16,7 @@ def bubblesort(data):
 
 시간복잡도는 O(n^2) / 비효율적.
 
-
+<br>
 
 #### 02) 선택정렬
 
@@ -37,7 +37,7 @@ def selection_sort(data):
 
 최악의 경우 (23451)
 
-
+<br>
 
 #### 03) 삽입정렬
 
@@ -62,7 +62,7 @@ def insertion_sort(data):
 
 최악 (54321)
 
-
+<br>
 
 #### 04) 퀵정렬
 
@@ -104,7 +104,7 @@ def qsort(data):
 
 맨 처음 pivot이 가장 크거나 작으면, 모든 데이터를 비교하는 상황이 나옴 => O(n^2)
 
-
+<br>
 
 #### 05) 병합정렬 (분할정복)
 
@@ -155,9 +155,7 @@ def mergesplit(data):
   - 단순 : 선택, 삽입, 버블, 쉘 (보통 O(N^2))
   - 복잡 : 퀵, 기수, 힙, 병합 (NlogN)
 
----
-
-
+<br>
 
 ### 2. 재귀용법 (recursive call, 재귀 호출)
 
@@ -218,9 +216,7 @@ import sys
 sys.setrecursionlimit(1000000)
 ```
 
----
-
-
+<br>
 
 ### 3. 동적 계획법(DP)과 분할정복
 
@@ -245,7 +241,7 @@ def fibo_dp(num):
     return cache[num]
 ```
 
-
+<br>
 
 #### 02) 분할정복 (Divde and Conquer)
 
@@ -262,7 +258,7 @@ def fibo_dp(num):
 
 ex) 병합정렬 참고
 
----
+<br>
 
 ### 4. 탐색
 
@@ -299,7 +295,7 @@ def binary_search(data, search):
 
 시간복잡도는 O(logn)
 
-
+<br>
 
 #### 02) 순차 탐색
 
@@ -321,7 +317,7 @@ def sequencial(data_list, search_data):
 
 - 시간복잡도) 최악의 경우 리스트 길이가 n일 때, O(n)
 
-
+<br>
 
 ### 5. 그래프 탐색
 
@@ -378,7 +374,7 @@ for _ in range(len(edge)):
 
 
 
-
+<br>
 
 #### 01) 너비 우선 탐색 (BFS - Breadth First Search)
 
@@ -403,7 +399,7 @@ def bfs(graph, start_node):
 
 시간복잡도는 O(V + E)
 
-
+<br>
 
 #### 02) 깊이 우선 탐색(DFS - Depth First Search)
 
@@ -427,7 +423,7 @@ def dfs(graph, start_node):
 
 시간복잡도는 O(V + E)
 
-
+<br>
 
 #### 03) 최단 경로
 
@@ -526,11 +522,9 @@ dijkstra(mygraph, 'A')
 
 
 
-
+<br>
 
 ### 6. 탐욕 (Greedy)
-
----
 
 : 최적의 해에 가까운 값을 구하기 위해 사용.
 
@@ -576,11 +570,9 @@ def get_max_value(data_list, capacity):
 
 한계) 항상 최적의 해를 구하는 것은 아님(근사치 추정)
 
-
+<br>
 
 ### 7. 이진탐색 (binary search)
-
----
 
 : 탐색 범위를 절반씩 좁혀가며 데이터를 탐색하는 방법. (데이터가 정렬되어 있어야만 사용 가능!)
 
@@ -636,11 +628,9 @@ def solution(array, t_data):
 
 
 
-
+<br>
 
 ### 8. 백트래킹 (backtracking)
-
----
 
 : 제약 조건 만족 문제에서 해를 찾기 위한 전략
 
