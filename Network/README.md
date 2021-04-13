@@ -52,7 +52,7 @@ collision domain을 나누어 주는 장비. (포트 수별로 나뉨) 어떤 PC
 
 ### 1. HTTP vs HTTPS
 
-#### HTTP (Hyper-text Transfer Protocol)
+#### -HTTP (Hyper-text Transfer Protocol)
 
 : 인터넷상의 커뮤니케이션에 사용되는 형식 중의 하나. (인터넷 규약)
 
@@ -84,7 +84,7 @@ collision domain을 나누어 주는 장비. (포트 수별로 나뉨) 어떤 PC
 
          : 쿠키와 세션의 문제점을 보완하기 위해 토큰 기반 인증방식이 도입되었다. 보호할 데이터를 토큰으로 치환하여, 원본 데이터 대신 토큰을 사용하는 기술. (보안성 높음)
 
-
+<br>
 
 - **HTTP의 문제점**
 
@@ -100,9 +100,9 @@ collision domain을 나누어 주는 장비. (포트 수별로 나뉨) 어떤 PC
 
     => 해시값 확인 / 파일의 디지털 서명 확인 / HTTPS를 사용해야 확실히 방지가 된다(메시지 다이제스트 방법으로, 데이터로부터 고정길이를 계산, 비교해 확인.)
 
+<br>
 
-
-#### HTTPS (Hyper-text Transfer Protocol over SSL)
+#### -HTTPS (Hyper-text Transfer Protocol over SSL)
 
 : **HTTP에 암호화와 인증, 완전성 보호를 더한 형식.**
 
@@ -129,9 +129,9 @@ HTTP 통신을 하는 소켓부분을 SSL/TLS라는 프로토콜로 대체한 �
 
   : 비대칭/대칭키 암호화 방식을 혼합한 암호 시스템으로, 대칭키를 비대칭키 암호화 방식으로 공유한 뒤, 다음부터의 통신은 대칭키를 사용해 암호화한다.
 
+<br>
 
-
-#### HTTP 구현과정
+#### -HTTP 구현과정
 
 **1) 신뢰를 위한 탐색과정 (handshake)**
 
@@ -148,7 +148,6 @@ HTTP 통신을 하는 소켓부분을 SSL/TLS라는 프로토콜로 대체한 �
 
 - 성공적으로 **복호화된 인증서에는 서버의 공개키가 포함**되어있음
 
-  
 
 **3) 서버와 데이터 주고 받기** (다량의 데이터를 비대칭으로 하면 부담되기 때문에 **대칭/비대칭 방식으로 데이터를 주고 받음**)
 
@@ -209,7 +208,7 @@ HTTP 통신을 하는 소켓부분을 SSL/TLS라는 프로토콜로 대체한 �
 
 ### 3. TCP vs UDP
 
-#### TCP (Transmission Control Protocol)
+#### -TCP (Transmission Control Protocol)
 
 : 신뢰성있는 데이터 통신을 가능하게 해주는 전송계층 프로토콜
 
@@ -223,16 +222,16 @@ HTTP 통신을 하는 소켓부분을 SSL/TLS라는 프로토콜로 대체한 �
 
 *Segment : TCP 프로토콜의 PDU. 데이터를 cut해서 각각의 데이터 앞에 TCP 헤더를 붙임.
 
-
+<br>
 
 #### TCP의 문제점
 
 - 전송의 신뢰성은 보장하지만, 매번 connection을 연결해 시간손실 발생 (3-way-handshake)
 - 패킷을 조금만 손실해도 재전송
 
+<br>
 
-
-#### UDP (User Datagram Protocol)
+#### -UDP (User Datagram Protocol)
 
 : TCP보다 신뢰성이 떨어지지만, 전송속도가 일반적으로 빠른 프로토콜. 연결 절차를 거치지 않고, 일방적으로 데이터를 보냄.
 
@@ -266,7 +265,7 @@ HTTP 통신을 하는 소켓부분을 SSL/TLS라는 프로토콜로 대체한 �
   - SYN - 연결 요청 (들리는지 물어봄)
   - FIN - 연결 끊기
 
-
+<br>
 
 #### TCP의 3-way-handshake (connection 연결)
 
@@ -278,7 +277,7 @@ HTTP 통신을 하는 소켓부분을 SSL/TLS라는 프로토콜로 대체한 �
 
 => Established (연결 성립)
 
-
+<br>
 
 #### 4-way-handshake (connection 해제)
 
@@ -309,7 +308,7 @@ HTTP 통신을 하는 소켓부분을 SSL/TLS라는 프로토콜로 대체한 �
 - DNS서버는 **DNS 프로토콜**을 사용
   - 네트워크를 경유하여 **DNS 구현요소 간에 질의(query)/응답(response)을 수행**하기 위한 프로토콜
 
-
+<br>
 
 #### 네임서버 레코드
 
@@ -319,7 +318,7 @@ HTTP 통신을 하는 소켓부분을 SSL/TLS라는 프로토콜로 대체한 �
 
 해당 DNS레코드의 성격에 따라, 이를 이용해 메일 서버 사용 설정 혹은 소유한 도메인의 소유권 확인 설정을 할 수 있다.
 
-
+<br>
 
 #### 로드 밸런싱
 
@@ -330,7 +329,7 @@ HTTP 통신을 하는 소켓부분을 SSL/TLS라는 프로토콜로 대체한 �
 - **DNS Round Robin - 네임서버(DNS)의 도메인을 이용**
 - L4를 이용한 로드밸런싱
 
-
+<br>
 
 #### DNS Round Robin
 
@@ -412,7 +411,7 @@ HTTP 통신을 하는 소켓부분을 SSL/TLS라는 프로토콜로 대체한 �
 
 : 통신이 일어나는 과정을 7개의 단계로 나눈 것. 통신을 7개의 단계별로 표준화하여, 그 효율성을 높이기 위해서 사용된다.
 
--특징
+**-특징**
 
 - 데이터의 흐름이 한눈에 보인다.
 - 문제를 해결하기 편리하다.
@@ -420,7 +419,7 @@ HTTP 통신을 하는 소켓부분을 SSL/TLS라는 프로토콜로 대체한 �
 
 
 
--계층
+**-계층**
 
 - Application Layer
 
